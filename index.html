@@ -210,10 +210,22 @@
     .setting-select { padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 0.85rem; }
     /* Comments */
     .comment-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .comment-header-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .comment-author { font-weight: 600; font-size: 0.85rem; }
-    .comment-reply { font-size: 0.75rem; color: var(--secondary); margin-left: 8px; }
+    .comment-reply-btn { margin-left: auto; background: none; border: none; color: var(--primary); font-size: 0.75rem; cursor: pointer; padding: 2px 6px; }
     .comment-text { font-size: 0.85rem; margin-top: 4px; line-height: 1.5; }
-    .comment-time { font-size: 0.7rem; color: var(--text-secondary); margin-top: 4px; }
+    .comment-time { font-size: 0.7rem; color: var(--text-secondary); }
+    .reply-form { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .reply-form.hidden { display: none; }
+    .reply-form input, .reply-form textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--bg); color: var(--text); font-size: 0.85rem;
+    }
+    .reply-form textarea { min-height: 64px; resize: vertical; }
+    .reply-form button {
+      align-self: flex-end; padding: 6px 14px; background: var(--primary); color: #fff;
+      border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+    }
     .comment-input-row { display: flex; gap: 8px; margin-top: 12px; }
     .comment-input-row input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); color: var(--text); }
     .comment-input-row button { padding: 8px 16px; background: var(--primary); color: #fff; border: none; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }

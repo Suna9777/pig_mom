@@ -412,12 +412,13 @@ export const MOCK_EXPERIENCES: ExperienceShare[] = MOCK_POSTS.filter(
 
 /** 示例评论 */
 export const MOCK_COMMENTS: Comment[] = [
-  { id: 'c1', postId: 'post_1', authorId: 'user_3', authorName: '珞喻路达人', content: '校医院牙科可以报销一部分，建议先挂号咨询。', createdAt: '2026-06-15T11:00:00Z' },
-  { id: 'c2', postId: 'post_1', authorId: 'user_1', authorName: '猪猪妈妈', content: '我去年看过，拔智齿报销了60%左右。', createdAt: '2026-06-15T12:00:00Z', replyToId: 'c1', replyToName: '珞喻路达人' },
-  { id: 'c3', postId: 'post_2', authorId: 'user_5', authorName: '找房萌新', content: '太有用了，收藏！', createdAt: '2026-06-14T09:00:00Z' },
-  { id: 'c4', postId: 'post_4', authorId: 'user_3', authorName: '珞喻路达人', content: '推荐南湖周边，性价比高，注意安全选正规中介。', createdAt: '2026-06-12T10:00:00Z' },
-  { id: 'c5', postId: 'post_5', authorId: 'user_2', authorName: '华师小白', content: '期末真的抢不到座，感谢分享！', createdAt: '2026-06-11T08:00:00Z' },
-  { id: 'c6', postId: 'post_10', authorId: 'user_1', authorName: '猪猪妈妈', content: '保留合同和照片证据，可以向消协投诉。', createdAt: '2026-06-06T10:00:00Z' },
+  { id: 'c1', postId: 'post_1', authorId: 'user_3', authorName: '珞喻路达人', content: '校医院牙科可以报销一部分，建议先挂号咨询。', createdAt: '2026-06-15T11:00:00Z', parentId: null, replies: [] },
+  { id: 'c2', postId: 'post_1', authorId: 'user_1', authorName: '猪猪妈妈', content: '我去年看过，拔智齿报销了60%左右。', createdAt: '2026-06-15T12:00:00Z', parentId: 'c1', replies: [] },
+  { id: 'c2a', postId: 'post_1', authorId: 'user_2', authorName: '华师小白', content: '请问挂号需要提前预约吗？', createdAt: '2026-06-15T12:30:00Z', parentId: 'c2', replies: [] },
+  { id: 'c3', postId: 'post_2', authorId: 'user_5', authorName: '找房萌新', content: '太有用了，收藏！', createdAt: '2026-06-14T09:00:00Z', parentId: null, replies: [] },
+  { id: 'c4', postId: 'post_4', authorId: 'user_3', authorName: '珞喻路达人', content: '推荐南湖周边，性价比高，注意安全选正规中介。', createdAt: '2026-06-12T10:00:00Z', parentId: null, replies: [] },
+  { id: 'c5', postId: 'post_5', authorId: 'user_2', authorName: '华师小白', content: '期末真的抢不到座，感谢分享！', createdAt: '2026-06-11T08:00:00Z', parentId: null, replies: [] },
+  { id: 'c6', postId: 'post_10', authorId: 'user_1', authorName: '猪猪妈妈', content: '保留合同和照片证据，可以向消协投诉。', createdAt: '2026-06-06T10:00:00Z', parentId: null, replies: [] },
 ];
 
 /** FAQ 数据 */

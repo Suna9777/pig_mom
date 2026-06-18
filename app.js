@@ -17,6 +17,52 @@ const App = (() => {
     return posts.map(({ resolved, ...rest }) => rest);
   }
 
+  function normalizeComment(c) {
+    const parentId = c.parentId ?? c.replyToId ?? null;
+    const { replyToId, replyToName, replies, ...rest } = c;
+    return { ...rest, parentId };
+  }
+
+  function normalizeComments(comments) {
+    return comments.map(normalizeComment);
+  }
+
+  function buildCommentTree(flat) {
+    const map = new Map();
+    flat.forEach(c => map.set(c.id, { ...c, replies: [] }));
+    const roots = [];
+    flat.forEach(c => {
+      const node = map.get(c.id);
+      if (!c.parentId) roots.push(node);
+      else {
+        const parent = map.get(c.parentId);
+        if (parent) parent.replies.push(node);
+        else roots.push(node);
+      }
+    });
+    const sort = list => {
+      list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      list.forEach(n => sort(n.replies));
+    };
+    sort(roots);
+    return roots;
+  }
+
+  function getCommentDepth(flat, commentId) {
+    const map = new Map(flat.map(c => [c.id, c]));
+    let depth = 0;
+    let cur = map.get(commentId);
+    while (cur) {
+      depth++;
+      cur = cur.parentId ? map.get(cur.parentId) : null;
+    }
+    return depth;
+  }
+
+  function countAllComments(tree) {
+    return tree.reduce((sum, c) => sum + 1 + countAllComments(c.replies), 0);
+  }
+
   function defaultState() {
     return {
       nickname: '猪猪妈妈',
@@ -48,6 +94,7 @@ const App = (() => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.posts) parsed.posts = stripResolvedFromPosts(parsed.posts);
+        if (parsed.comments) parsed.comments = normalizeComments(parsed.comments);
         return { ...defaultState(), ...parsed, settings: { ...defaultState().settings, ...parsed.settings } };
       }
     } catch (e) { /* ignore */ }
@@ -58,6 +105,7 @@ const App = (() => {
     state.blockedUsers = [...blockedUsers];
     state.blockedPosts = [...blockedPosts];
     state.posts = stripResolvedFromPosts(state.posts);
+    state.comments = normalizeComments(state.comments);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     applyTheme();
   }
@@ -426,19 +474,37 @@ const App = (() => {
     toast('已屏蔽用户：' + name);
   }
 
+  function renderCommentHtml(comment, depth, postId) {
+    const canReply = depth < 3;
+    const indent = (depth - 1) * 20;
+    let html = `
+      <div class="comment-item" style="margin-left:${indent}px">
+        <div class="comment-header-row">
+          <span class="comment-author">${escapeHtml(comment.authorName)}</span>
+          <span class="comment-time">${formatTime(comment.createdAt)}</span>
+          ${canReply ? `<button type="button" class="comment-reply-btn" onclick="App.toggleReplyForm('${comment.id}')">回复</button>` : ''}
+        </div>
+        <div class="comment-text">${escapeHtml(comment.content)}</div>
+        ${canReply ? `
+        <div class="reply-form hidden" id="reply-form-${comment.id}">
+          <input type="text" id="reply-name-${comment.id}" placeholder="你的姓名" value="${escapeHtml(state.nickname)}">
+          <textarea id="reply-content-${comment.id}" placeholder="写下回复…"></textarea>
+          <button type="button" onclick="App.submitReply('${postId}','${comment.id}')">提交</button>
+        </div>` : ''}
+      </div>`;
+    comment.replies.forEach(child => { html += renderCommentHtml(child, depth + 1, postId); });
+    return html;
+  }
+
   function showPostDetail(postId) {
     const post = state.posts.find(p => p.id === postId);
     if (!post) return;
     addHistory({ type: 'post', title: post.title, targetId: postId, sectionId: post.sectionId });
-    const postComments = state.comments.filter(c => c.postId === postId);
-    const commentsHtml = postComments.length
-      ? postComments.map(c => `
-        <div class="comment-item">
-          <span class="comment-author">${escapeHtml(c.authorName)}</span>
-          ${c.replyToName ? `<span class="comment-reply">回复 ${escapeHtml(c.replyToName)}</span>` : ''}
-          <div class="comment-text">${escapeHtml(c.content)}</div>
-          <div class="comment-time">${formatTime(c.createdAt)}</div>
-        </div>`).join('')
+    const flat = state.comments.filter(c => c.postId === postId);
+    const tree = buildCommentTree(flat);
+    const commentTotal = countAllComments(tree);
+    const commentsHtml = tree.length
+      ? tree.map(c => renderCommentHtml(c, 1, postId)).join('')
       : '<p style="color:var(--text-secondary);font-size:0.85rem;">暂无评论</p>';
 
     showModal(post.title, `
@@ -448,7 +514,7 @@ const App = (() => {
       <p style="line-height:1.7;margin-bottom:12px;">${escapeHtml(post.content)}</p>
       <div class="post-tags" style="margin-bottom:12px;">${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
       <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:16px;">${escapeHtml(post.authorName)} · ${formatTime(post.createdAt)}</p>
-      <h3 style="margin-bottom:8px;font-size:0.95rem;">评论 (${postComments.length})</h3>
+      <h3 style="margin-bottom:8px;font-size:0.95rem;">评论 (${commentTotal})</h3>
       ${commentsHtml}
       <div class="comment-input-row">
         <input type="text" id="commentInput" placeholder="写下你的评论…">
@@ -457,12 +523,37 @@ const App = (() => {
     `);
   }
 
+  function toggleReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (form) form.classList.toggle('hidden');
+  }
+
+  function submitReply(postId, parentId) {
+    const nameEl = document.getElementById('reply-name-' + parentId);
+    const contentEl = document.getElementById('reply-content-' + parentId);
+    const authorName = nameEl?.value?.trim();
+    const content = contentEl?.value?.trim();
+    if (!authorName || !content) { toast('姓名和内容不能为空'); return; }
+    const flat = state.comments.filter(c => c.postId === postId);
+    if (getCommentDepth(flat, parentId) >= 3) { toast('已达最大回复层级'); return; }
+    state.comments.push({
+      id: 'c_' + Date.now(), postId, parentId, authorId: USER_ID, authorName,
+      content, createdAt: new Date().toISOString()
+    });
+    const post = state.posts.find(p => p.id === postId);
+    if (post) post.commentCount++;
+    saveState();
+    toast('回复成功');
+    closeModal();
+    showPostDetail(postId);
+  }
+
   function submitComment(postId) {
     const input = document.getElementById('commentInput');
     const content = input?.value?.trim();
     if (!content) { toast('请输入评论内容'); return; }
     state.comments.push({
-      id: 'c_' + Date.now(), postId, authorId: USER_ID, authorName: state.nickname,
+      id: 'c_' + Date.now(), postId, parentId: null, authorId: USER_ID, authorName: state.nickname,
       content, createdAt: new Date().toISOString()
     });
     const post = state.posts.find(p => p.id === postId);
@@ -878,6 +969,7 @@ const App = (() => {
   return {
     openSection, goBackSection, setSectionTab, onItemClick, handleSearchResult,
     setTagFilter, showPostDetail, toggleLike, toggleFavorite, toggleUseful,
+    toggleReplyForm, submitReply,
     showPostMenu, reportPost, submitReport, blockUser, submitComment,
     showPublishForm, previewImages, submitPost, saveDraft,
     openProfileSub, backProfile, editNickname, editDraft, toggleFollow,

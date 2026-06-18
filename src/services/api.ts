@@ -8,6 +8,7 @@ import { BasicArticle, CCNUInfo, Post, Comment, SectionId } from '../types';
 import { MOCK_BASIC_ARTICLES, MOCK_CCNU_INFOS, MOCK_POSTS, MOCK_COMMENTS } from '../data/mockData';
 import { getItem, setItem } from './storage';
 import { STORAGE_KEYS } from '../constants/storage';
+import { normalizeComment, stripRepliesForStorage, StoredComment } from '../utils/comments';
 
 /** 剥离旧版 resolved 字段，确保帖子数据不含该字段 */
 function stripResolvedFromPost(post: Post & { resolved?: boolean }): Post {
@@ -48,8 +49,13 @@ export async function fetchPostsFromAPI(): Promise<Post[]> {
 /** 获取评论 — 将来: GET /posts/:id/comments */
 export async function fetchCommentsFromAPI(): Promise<Comment[]> {
   const stored = await getItem<Comment[]>(STORAGE_KEYS.COMMENTS, []);
-  if (stored.length > 0) return stored;
-  return MOCK_COMMENTS;
+  const raw = stored.length > 0 ? stored : MOCK_COMMENTS;
+  const normalized = raw.map(normalizeComment);
+  const needsMigration = stored.some((c) => c.replyToId != null || !('parentId' in c));
+  if (needsMigration) {
+    await setItem(STORAGE_KEYS.COMMENTS, normalized.map(stripRepliesForStorage));
+  }
+  return normalized;
 }
 
 /** 发布帖子 — 将来: POST /posts */
@@ -79,10 +85,11 @@ export async function deletePostAPI(postId: string): Promise<void> {
 
 /** 创建评论 — 将来: POST /posts/:id/comments */
 export async function createCommentAPI(comment: Comment): Promise<Comment> {
-  const comments = await getItem<Comment[]>(STORAGE_KEYS.COMMENTS, MOCK_COMMENTS);
-  const updated = [...comments, comment];
+  const flat = stripRepliesForStorage(normalizeComment(comment));
+  const comments = (await getItem<StoredComment[]>(STORAGE_KEYS.COMMENTS, MOCK_COMMENTS)).map(normalizeComment);
+  const updated: StoredComment[] = [...comments.map(stripRepliesForStorage), flat];
   await setItem(STORAGE_KEYS.COMMENTS, updated);
-  return comment;
+  return normalizeComment(flat);
 }
 
 export { API_BASE };
