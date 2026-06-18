@@ -33,6 +33,7 @@ import {
 import { MOCK_POSTS, MOCK_COMMENTS } from '../data/mockData';
 import { generateId } from '../utils/helpers';
 import { searchAll } from '../utils/search';
+import { buildCommentTree, getCommentDepth } from '../utils/comments';
 import { FONT_SIZES, COLORS } from '../constants/theme';
 import { LoadingScreen } from '../components/LoadingScreen';
 
@@ -187,10 +188,13 @@ interface AppContextValue {
   toggleLike: (postId: string) => Promise<void>;
   toggleFavorite: (postId: string) => Promise<void>;
   toggleUseful: (postId: string) => Promise<void>;
-  toggleResolved: (postId: string) => Promise<void>;
   // 评论
   getCommentsByPost: (postId: string) => Comment[];
-  addComment: (postId: string, content: string, replyTo?: Comment) => Promise<void>;
+  addComment: (
+    postId: string,
+    content: string,
+    options?: { parentId?: string | null; authorName?: string }
+  ) => Promise<void>;
   // 草稿
   saveDraft: (draft: Omit<Draft, 'id' | 'savedAt'> & { id?: string }) => Promise<void>;
   removeDraft: (id: string) => Promise<void>;
@@ -334,7 +338,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         commentCount: 0,
         favoriteCount: 0,
         usefulCount: 0,
-        resolved: false,
         likedBy: [],
         favoritedBy: [],
         usefulBy: [],
@@ -432,36 +435,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [state.posts, state.usefulMarks, state.user]
   );
 
-  const toggleResolved = useCallback(
-    async (postId: string) => {
-      const post = state.posts.find((p) => p.id === postId);
-      if (!post || post.authorId !== state.user.id) return;
-      const updated = { ...post, resolved: !post.resolved };
-      await updatePostAPI(updated);
-      dispatch({ type: 'UPDATE_POST', payload: updated });
-    },
-    [state.posts, state.user]
-  );
-
   const getCommentsByPost = useCallback(
     (postId: string) =>
-      state.comments
-        .filter((c) => c.postId === postId)
-        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+      buildCommentTree(state.comments.filter((c) => c.postId === postId)),
     [state.comments]
   );
 
   const addComment = useCallback(
-    async (postId: string, content: string, replyTo?: Comment) => {
+    async (
+      postId: string,
+      content: string,
+      options?: { parentId?: string | null; authorName?: string }
+    ) => {
+      const trimmed = content.trim();
+      const authorName = (options?.authorName ?? state.user.nickname).trim();
+      if (!authorName || !trimmed) return;
+
+      const parentId = options?.parentId ?? null;
+      if (parentId) {
+        const depth = getCommentDepth(state.comments, parentId);
+        if (depth >= 3) return;
+      }
+
       const comment: Comment = {
         id: generateId('comment'),
         postId,
         authorId: state.user.id,
-        authorName: state.user.nickname,
-        content,
+        authorName,
+        content: trimmed,
         createdAt: new Date().toISOString(),
-        replyToId: replyTo?.id,
-        replyToName: replyTo?.authorName,
+        parentId,
+        replies: [],
       };
       await createCommentAPI(comment);
       dispatch({ type: 'ADD_COMMENT', payload: comment });
@@ -618,7 +622,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     toggleLike,
     toggleFavorite,
     toggleUseful,
-    toggleResolved,
     getCommentsByPost,
     addComment,
     saveDraft,

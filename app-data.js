@@ -173,22 +173,23 @@ const CCNU_INFOS = [
 ];
 
 const POSTS = [
-  { id: 'post_1', type: 'help', sectionId: 'health', title: '校医院看牙能报销吗？', content: '最近牙疼想去校医院看看，请问大学生医保能报销牙科吗？有没有同学有经验分享一下流程？需要提前预约吗？', images: [], tags: ['医疗', '求助'], authorId: 'user_2', authorName: '华师小白', createdAt: '2026-06-15T10:30:00Z', likeCount: 12, commentCount: 5, favoriteCount: 3, usefulCount: 8, resolved: false },
-  { id: 'post_2', type: 'share', sectionId: 'transport', title: '武汉地铁学生优惠攻略', content: '整理了武汉地铁各线路的学生出行Tips：2号线广埠屯站是最方便的，建议办Metro新时代APP，可以扫码乘车。周末去光谷、江汉路都很方便，末班车时间要注意。', images: [], tags: ['出行', '分享'], authorId: 'user_3', authorName: '珞喻路达人', createdAt: '2026-06-14T08:00:00Z', likeCount: 45, commentCount: 12, favoriteCount: 28, usefulCount: 0, resolved: false },
-  { id: 'post_3', type: 'trade', sectionId: 'life', title: '转让九成新自行车', content: '毕业出自行车，九成新，买时350现150出。有锁和篮子，适合在 campus 内通勤。东九宿舍区可面交。', images: [], tags: ['交易', '出行'], authorId: 'user_4', authorName: '毕业学长', createdAt: '2026-06-13T15:20:00Z', likeCount: 6, commentCount: 8, favoriteCount: 2, usefulCount: 0, resolved: false },
-  { id: 'post_4', type: 'help', sectionId: 'life', title: '东九附近有好的租房推荐吗？', content: '下学期想搬出宿舍租房，预算1500左右，希望离学校近、安全。有没有推荐的区域或中介？避免踩坑经验也欢迎分享！', images: [], tags: ['租房', '求助'], authorId: 'user_5', authorName: '找房萌新', createdAt: '2026-06-12T09:00:00Z', likeCount: 18, commentCount: 15, favoriteCount: 10, usefulCount: 5, resolved: true },
-  { id: 'post_5', type: 'share', sectionId: 'study', title: '图书馆抢座攻略——期末版', content: '期末图书馆一座难求，分享我的抢座经验：7点前到可以占到好位置，二三楼靠窗最抢手。记得带校园卡，临时离开要在系统里登记，超过30分钟会被清座。', images: [], tags: ['学习', '分享'], authorId: 'user_1', authorName: '猪猪妈妈', createdAt: '2026-06-11T07:00:00Z', likeCount: 89, commentCount: 23, favoriteCount: 56, usefulCount: 0, resolved: false },
-  { id: 'post_6', type: 'share', sectionId: 'finance', title: '华师周边美食穷鬼套餐', content: '广埠屯周边性价比美食汇总：桂苑食堂二楼麻辣香锅、广八路的新疆大盘鸡、群光负一楼的小吃。人均20-30元，学生党友好。', images: [], tags: ['美食', '分享'], authorId: 'user_3', authorName: '珞喻路达人', createdAt: '2026-06-10T12:00:00Z', likeCount: 67, commentCount: 19, favoriteCount: 42, usefulCount: 0, resolved: false },
-  { id: 'post_7', type: 'help', sectionId: 'certificate', title: '护照办理需要哪些材料？', content: '打算暑假出国旅游，第一次办护照，户口已迁入学校。请问需要带什么材料？去哪个窗口办？大概多久能拿到？', images: [], tags: ['证件', '求助'], authorId: 'user_6', authorName: '旅行计划er', createdAt: '2026-06-09T14:00:00Z', likeCount: 9, commentCount: 7, favoriteCount: 4, usefulCount: 3, resolved: false },
-  { id: 'post_8', type: 'trade', sectionId: 'study', title: '出考研政治资料', content: '肖秀荣全套+徐涛笔记，几乎全新，50元全套。还有英语真题试卷若干，可单买。南湖校区面交。', images: [], tags: ['学习', '交易'], authorId: 'user_7', authorName: '上岸学姐', createdAt: '2026-06-08T16:30:00Z', likeCount: 4, commentCount: 3, favoriteCount: 1, usefulCount: 0, resolved: false }
+  { id: 'post_1', type: 'help', sectionId: 'health', title: '校医院看牙能报销吗？', content: '最近牙疼想去校医院看看，请问大学生医保能报销牙科吗？有没有同学有经验分享一下流程？需要提前预约吗？', images: [], tags: ['医疗', '求助'], authorId: 'user_2', authorName: '华师小白', createdAt: '2026-06-15T10:30:00Z', likeCount: 12, commentCount: 5, favoriteCount: 3, usefulCount: 8 },
+  { id: 'post_2', type: 'share', sectionId: 'transport', title: '武汉地铁学生优惠攻略', content: '整理了武汉地铁各线路的学生出行Tips：2号线广埠屯站是最方便的，建议办Metro新时代APP，可以扫码乘车。周末去光谷、江汉路都很方便，末班车时间要注意。', images: [], tags: ['出行', '分享'], authorId: 'user_3', authorName: '珞喻路达人', createdAt: '2026-06-14T08:00:00Z', likeCount: 45, commentCount: 12, favoriteCount: 28, usefulCount: 0 },
+  { id: 'post_3', type: 'trade', sectionId: 'life', title: '转让九成新自行车', content: '毕业出自行车，九成新，买时350现150出。有锁和篮子，适合在 campus 内通勤。东九宿舍区可面交。', images: [], tags: ['交易', '出行'], authorId: 'user_4', authorName: '毕业学长', createdAt: '2026-06-13T15:20:00Z', likeCount: 6, commentCount: 8, favoriteCount: 2, usefulCount: 0 },
+  { id: 'post_4', type: 'help', sectionId: 'life', title: '东九附近有好的租房推荐吗？', content: '下学期想搬出宿舍租房，预算1500左右，希望离学校近、安全。有没有推荐的区域或中介？避免踩坑经验也欢迎分享！', images: [], tags: ['租房', '求助'], authorId: 'user_5', authorName: '找房萌新', createdAt: '2026-06-12T09:00:00Z', likeCount: 18, commentCount: 15, favoriteCount: 10, usefulCount: 5 },
+  { id: 'post_5', type: 'share', sectionId: 'study', title: '图书馆抢座攻略——期末版', content: '期末图书馆一座难求，分享我的抢座经验：7点前到可以占到好位置，二三楼靠窗最抢手。记得带校园卡，临时离开要在系统里登记，超过30分钟会被清座。', images: [], tags: ['学习', '分享'], authorId: 'user_1', authorName: '猪猪妈妈', createdAt: '2026-06-11T07:00:00Z', likeCount: 89, commentCount: 23, favoriteCount: 56, usefulCount: 0 },
+  { id: 'post_6', type: 'share', sectionId: 'finance', title: '华师周边美食穷鬼套餐', content: '广埠屯周边性价比美食汇总：桂苑食堂二楼麻辣香锅、广八路的新疆大盘鸡、群光负一楼的小吃。人均20-30元，学生党友好。', images: [], tags: ['美食', '分享'], authorId: 'user_3', authorName: '珞喻路达人', createdAt: '2026-06-10T12:00:00Z', likeCount: 67, commentCount: 19, favoriteCount: 42, usefulCount: 0 },
+  { id: 'post_7', type: 'help', sectionId: 'certificate', title: '护照办理需要哪些材料？', content: '打算暑假出国旅游，第一次办护照，户口已迁入学校。请问需要带什么材料？去哪个窗口办？大概多久能拿到？', images: [], tags: ['证件', '求助'], authorId: 'user_6', authorName: '旅行计划er', createdAt: '2026-06-09T14:00:00Z', likeCount: 9, commentCount: 7, favoriteCount: 4, usefulCount: 3 },
+  { id: 'post_8', type: 'trade', sectionId: 'study', title: '出考研政治资料', content: '肖秀荣全套+徐涛笔记，几乎全新，50元全套。还有英语真题试卷若干，可单买。南湖校区面交。', images: [], tags: ['学习', '交易'], authorId: 'user_7', authorName: '上岸学姐', createdAt: '2026-06-08T16:30:00Z', likeCount: 4, commentCount: 3, favoriteCount: 1, usefulCount: 0 }
 ];
 
 const COMMENTS = [
-  { id: 'c1', postId: 'post_1', authorId: 'user_3', authorName: '珞喻路达人', content: '校医院牙科可以报销一部分，建议先挂号咨询。', createdAt: '2026-06-15T11:00:00Z' },
-  { id: 'c2', postId: 'post_1', authorId: 'user_1', authorName: '猪猪妈妈', content: '我去年看过，拔智齿报销了60%左右。', createdAt: '2026-06-15T12:00:00Z', replyToId: 'c1', replyToName: '珞喻路达人' },
-  { id: 'c3', postId: 'post_2', authorId: 'user_5', authorName: '找房萌新', content: '太有用了，收藏！', createdAt: '2026-06-14T09:00:00Z' },
-  { id: 'c4', postId: 'post_4', authorId: 'user_3', authorName: '珞喻路达人', content: '推荐南湖周边，性价比高，注意安全选正规中介。', createdAt: '2026-06-12T10:00:00Z' },
-  { id: 'c5', postId: 'post_5', authorId: 'user_2', authorName: '华师小白', content: '期末真的抢不到座，感谢分享！', createdAt: '2026-06-11T08:00:00Z' }
+  { id: 'c1', postId: 'post_1', authorId: 'user_3', authorName: '珞喻路达人', content: '校医院牙科可以报销一部分，建议先挂号咨询。', createdAt: '2026-06-15T11:00:00Z', parentId: null },
+  { id: 'c2', postId: 'post_1', authorId: 'user_1', authorName: '猪猪妈妈', content: '我去年看过，拔智齿报销了60%左右。', createdAt: '2026-06-15T12:00:00Z', parentId: 'c1' },
+  { id: 'c2a', postId: 'post_1', authorId: 'user_2', authorName: '华师小白', content: '请问挂号需要提前预约吗？', createdAt: '2026-06-15T12:30:00Z', parentId: 'c2' },
+  { id: 'c3', postId: 'post_2', authorId: 'user_5', authorName: '找房萌新', content: '太有用了，收藏！', createdAt: '2026-06-14T09:00:00Z', parentId: null },
+  { id: 'c4', postId: 'post_4', authorId: 'user_3', authorName: '珞喻路达人', content: '推荐南湖周边，性价比高，注意安全选正规中介。', createdAt: '2026-06-12T10:00:00Z', parentId: null },
+  { id: 'c5', postId: 'post_5', authorId: 'user_2', authorName: '华师小白', content: '期末真的抢不到座，感谢分享！', createdAt: '2026-06-11T08:00:00Z', parentId: null }
 ];
 
 const EXPERIENCES = POSTS.filter(p => p.type === 'share' || p.type === 'help').map(p => ({

@@ -70,7 +70,6 @@ export interface Post {
   commentCount: number;
   favoriteCount: number;
   usefulCount: number;
-  resolved: boolean;
   likedBy: string[];
   favoritedBy: string[];
   usefulBy: string[];
@@ -84,6 +83,9 @@ export interface Comment {
   authorName: string;
   content: string;
   createdAt: string;
+  parentId: string | null;
+  replies: Comment[];
+  /** @deprecated 兼容旧数据，迁移后由 parentId 替代 */
   replyToId?: string;
   replyToName?: string;
 }

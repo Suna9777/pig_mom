@@ -36,11 +36,6 @@ export function PostCard({ post, onPress, onLongPress }: PostCardProps) {
             {POST_TYPE_LABELS[post.type]}
           </Text>
         </View>
-        {post.type === 'help' && post.resolved && (
-          <View style={[styles.badge, { backgroundColor: COLORS.success + '33' }]}>
-            <Text style={[styles.badgeText, { color: COLORS.success, fontSize: fonts.xs }]}>已解决</Text>
-          </View>
-        )}
         <Text style={[styles.time, { color: colors.textSecondary, fontSize: fonts.xs }]}>
           {formatRelativeTime(post.createdAt)}
         </Text>

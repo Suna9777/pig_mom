@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,8 +15,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { CommunityStackParamList, HomeStackParamList, ProfileStackParamList } from '../../types';
 import { ImageGrid } from '../../components/ImageViewer';
 import { ReportModal } from '../../components/ReportModal';
+import { CommentItem } from '../../components/CommentItem';
 import { useApp, useTheme } from '../../context/AppContext';
 import { formatRelativeTime } from '../../utils/helpers';
+import { countAllComments } from '../../utils/comments';
 import { POST_TYPE_LABELS } from '../../constants/tags';
 import { SECTION_MAP } from '../../constants/sections';
 import { showFeedback, showToast } from '../../utils/feedback';
@@ -42,22 +44,20 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
     toggleLike,
     toggleFavorite,
     toggleUseful,
-    toggleResolved,
     blockUser,
     reportContent,
     state,
   } = useApp();
   const post = getPostById(postId);
   const comments = getCommentsByPost(postId);
+  const commentTotal = countAllComments(comments);
   const [commentText, setCommentText] = useState('');
-  const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
   const [reportVisible, setReportVisible] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'comment'; id: string } | null>(null);
 
   const isLiked = state.likes.includes(postId);
   const isFavorited = state.favorites.includes(postId);
   const isUseful = state.usefulMarks.includes(postId);
-  const isAuthor = post?.authorId === state.user.id;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,6 +74,19 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
     });
   }, [navigation, postId, colors]);
 
+  const handleReply = useCallback(
+    async (parentId: string, authorName: string, content: string) => {
+      await addComment(postId, content, { parentId, authorName });
+      showToast('回复成功');
+    },
+    [addComment, postId]
+  );
+
+  const handleReportComment = useCallback((commentId: string) => {
+    setReportTarget({ type: 'comment', id: commentId });
+    setReportVisible(true);
+  }, []);
+
   if (!post) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }]}>
@@ -84,13 +97,8 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
 
   const handleComment = async () => {
     if (!commentText.trim()) return;
-    await addComment(
-      postId,
-      commentText.trim(),
-      replyTo ? { id: replyTo.id, postId, authorId: '', authorName: replyTo.name, content: '', createdAt: '' } : undefined
-    );
+    await addComment(postId, commentText.trim());
     setCommentText('');
-    setReplyTo(null);
     showToast('评论成功');
   };
 
@@ -105,9 +113,6 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
             <Text style={[styles.badge, { backgroundColor: COLORS[post.type === 'help' ? 'help' : post.type === 'share' ? 'share' : 'trade'] + '33', color: COLORS[post.type === 'help' ? 'help' : post.type === 'share' ? 'share' : 'trade'], fontSize: fonts.xs }]}>
               {POST_TYPE_LABELS[post.type]}
             </Text>
-            {post.resolved && (
-              <Text style={[styles.badge, { backgroundColor: COLORS.success + '33', color: COLORS.success, fontSize: fonts.xs }]}>已解决</Text>
-            )}
           </View>
           <Text style={{ color: colors.text, fontSize: fonts.xl, fontWeight: '700' }}>{post.title}</Text>
           <Text style={{ color: colors.textSecondary, fontSize: fonts.sm, marginVertical: 8 }}>
@@ -129,15 +134,6 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
           {post.type === 'help' && (
             <ActionBtn icon="checkmark-circle" label={`有用 ${post.usefulCount}`} active={isUseful} onPress={() => { toggleUseful(postId); showFeedback('已标记有用'); }} color={COLORS.success} />
           )}
-          {post.type === 'help' && isAuthor && (
-            <ActionBtn
-              icon="checkmark-done"
-              label={post.resolved ? '取消解决' : '标记已解决'}
-              active={post.resolved}
-              onPress={() => { toggleResolved(postId); showToast(post.resolved ? '已取消' : '已标记为已解决'); }}
-              color={COLORS.secondary}
-            />
-          )}
           <TouchableOpacity onPress={() => { blockUser(post.authorId); showToast('已屏蔽该用户'); }}>
             <Ionicons name="ban" size={22} color={colors.textSecondary} />
           </TouchableOpacity>
@@ -145,40 +141,29 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
 
         {/* 评论列表 */}
         <Text style={{ color: colors.text, fontSize: fonts.lg, fontWeight: '600', margin: 16 }}>
-          评论 ({comments.length})
+          评论 ({commentTotal})
         </Text>
-        {comments.map((c) => (
-          <View key={c.id} style={[styles.comment, { backgroundColor: colors.card }]}>
-            <Text style={{ color: colors.text, fontSize: fonts.sm, fontWeight: '600' }}>{c.authorName}</Text>
-            {c.replyToName && (
-              <Text style={{ color: colors.textSecondary, fontSize: fonts.xs }}>回复 @{c.replyToName}</Text>
-            )}
-            <Text style={{ color: colors.text, fontSize: fonts.sm, marginTop: 4 }}>{c.content}</Text>
-            <View style={styles.commentActions}>
-              <TouchableOpacity onPress={() => setReplyTo({ id: c.id, name: c.authorName })}>
-                <Text style={{ color: colors.primary, fontSize: fonts.xs }}>回复</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setReportTarget({ type: 'comment', id: c.id });
-                  setReportVisible(true);
-                }}
-              >
-                <Text style={{ color: colors.textSecondary, fontSize: fonts.xs }}>举报</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
+        {comments.length === 0 ? (
+          <Text style={{ color: colors.textSecondary, fontSize: fonts.sm, marginHorizontal: 16, marginBottom: 12 }}>
+            暂无评论，来说两句吧
+          </Text>
+        ) : (
+          comments.map((c) => (
+            <CommentItem
+              key={c.id}
+              comment={c}
+              depth={1}
+              postId={postId}
+              defaultAuthorName={state.user.nickname}
+              onReply={handleReply}
+              onReport={handleReportComment}
+            />
+          ))
+        )}
       </ScrollView>
 
-      {/* 评论输入 */}
+      {/* 顶级评论输入 */}
       <View style={[styles.inputBar, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        {replyTo && (
-          <Text style={{ color: colors.textSecondary, fontSize: fonts.xs, marginBottom: 4 }}>
-            回复 @{replyTo.name}
-            <Text onPress={() => setReplyTo(null)} style={{ color: colors.primary }}> 取消</Text>
-          </Text>
-        )}
         <View style={styles.inputRow}>
           <TextInput
             style={[styles.input, { color: colors.text, fontSize: fonts.md, borderColor: colors.border }]}
@@ -223,8 +208,6 @@ const styles = StyleSheet.create({
   tags: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
   actions: { flexDirection: 'row', justifyContent: 'space-around', padding: 12, marginHorizontal: 16, borderRadius: 10 },
   actionBtn: { alignItems: 'center', gap: 2 },
-  comment: { marginHorizontal: 16, marginBottom: 8, padding: 12, borderRadius: 8 },
-  commentActions: { flexDirection: 'row', gap: 16, marginTop: 8 },
   inputBar: { padding: 12, borderTopWidth: 1 },
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   input: { flex: 1, borderWidth: 1, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8 },
