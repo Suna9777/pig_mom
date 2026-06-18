@@ -10,6 +10,7 @@ const App = (() => {
   let currentSectionTab = 'basic';
   let currentTagFilter = '全部';
   let profileSubPage = null;
+  let viewingUserId = null;
   let blockedUsers = new Set(state.blockedUsers || []);
   let blockedPosts = new Set(state.blockedPosts || []);
 
@@ -153,6 +154,99 @@ const App = (() => {
       </div>
       ${arrow}
     </div>`;
+  }
+
+  function getUserProfile(userId) {
+    if (USER_PROFILES[userId]) return USER_PROFILES[userId];
+    const post = state.posts.find(p => p.authorId === userId);
+    return {
+      id: userId,
+      name: post?.authorName || '用户',
+      avatar: '👤',
+      bio: '这位同学还没有填写简介'
+    };
+  }
+
+  function getPostsByUser(userId) {
+    return state.posts
+      .filter(p => p.authorId === userId)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  function getShareCount(post) {
+    return post.shareCount ?? 0;
+  }
+
+  function openUserProfile(userId) {
+    viewingUserId = userId;
+    const profile = getUserProfile(userId);
+    document.getElementById('userProfilePageTitle').textContent = profile.name;
+    renderUserProfilePage(userId);
+    document.getElementById('user-profile-view').classList.remove('hidden');
+    document.querySelector('.bottom-nav').classList.add('hidden');
+  }
+
+  function backFromUserProfile() {
+    viewingUserId = null;
+    document.getElementById('user-profile-view').classList.add('hidden');
+    document.querySelector('.bottom-nav').classList.remove('hidden');
+  }
+
+  function renderUserProfilePage(userId) {
+    const profile = getUserProfile(userId);
+    const posts = getPostsByUser(userId);
+    const isFollowing = state.followList.includes(userId);
+    const totalLikes = posts.reduce((s, p) => s + p.likeCount, 0);
+
+    const postsHtml = posts.length
+      ? posts.map(p => `
+        <div class="user-post-item" onclick="App.showPostDetail('${p.id}')">
+          <div class="user-post-time">${formatTime(p.createdAt)} · ${POST_TYPE_LABELS[p.type]}</div>
+          <div class="user-post-content">${escapeHtml(p.content)}</div>
+          <div class="user-post-stats">
+            <span><i class="fas fa-heart"></i>${p.likeCount}</span>
+            <span><i class="fas fa-comment"></i>${p.commentCount}</span>
+            <span><i class="fas fa-share"></i>${getShareCount(p)}</span>
+          </div>
+        </div>`).join('')
+      : `<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无发帖记录</p></div>`;
+
+    document.getElementById('userProfileContent').innerHTML = `
+      <div class="user-profile-banner">
+        <div class="user-profile-top">
+          <div class="user-profile-avatar">${profile.avatar}</div>
+          <div>
+            <div class="user-profile-name">${escapeHtml(profile.name)}</div>
+            <div class="user-profile-id">ID: ${profile.id}</div>
+          </div>
+        </div>
+        <div class="user-profile-bio">${escapeHtml(profile.bio)}</div>
+        <div class="user-profile-stats">
+          <div><strong>${posts.length}</strong>帖子</div>
+          <div><strong>${totalLikes}</strong>获赞</div>
+        </div>
+        ${userId !== USER_ID ? `
+          <button class="btn-primary" style="margin-top:14px;background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.5);"
+            onclick="App.toggleFollowFromProfile('${userId}')">
+            ${isFollowing ? '已关注' : '+ 关注'}
+          </button>` : ''}
+      </div>
+      <div class="user-posts-title">历史发帖 (${posts.length})</div>
+      ${postsHtml}`;
+  }
+
+  function toggleFollowFromProfile(userId) {
+    const idx = state.followList.indexOf(userId);
+    if (idx >= 0) {
+      state.followList.splice(idx, 1);
+      toast('已取消关注');
+    } else {
+      state.followList.push(userId);
+      toast('关注成功');
+    }
+    saveState();
+    renderUserProfilePage(userId);
+    if (profileSubPage === 'follow') renderSubContent('follow');
   }
 
   /* ---- 模态框 ---- */
@@ -404,11 +498,16 @@ const App = (() => {
       const liked = state.likedPosts.includes(p.id);
       const favorited = state.favorites.posts.includes(p.id);
       const useful = (p.usefulBy || []).includes(USER_ID);
+      const author = getUserProfile(p.authorId);
       return `
       <div class="post-card" data-id="${p.id}">
         <div class="post-header">
           <span class="post-type ${p.type}">${POST_TYPE_LABELS[p.type]}</span>
           <button class="post-menu" onclick="App.showPostMenu('${p.id}')"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+        <div class="post-author" onclick="App.openUserProfile('${p.authorId}')">
+          <span class="post-author-avatar">${author.avatar}</span>
+          <span class="post-author-name">${escapeHtml(p.authorName)}</span>
         </div>
         <div class="post-title" onclick="App.showPostDetail('${p.id}')">
           ${escapeHtml(p.title)}
@@ -416,8 +515,8 @@ const App = (() => {
         <div class="post-content" onclick="App.showPostDetail('${p.id}')">${escapeHtml(p.content)}</div>
         <div class="post-tags">${p.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
         <div class="post-meta">
-          <span>${escapeHtml(p.authorName)} · ${formatTime(p.createdAt)}</span>
-          <span><i class="fas fa-comment"></i> ${p.commentCount} · <i class="fas fa-heart"></i> ${p.likeCount}</span>
+          <span>${formatTime(p.createdAt)}</span>
+          <span><i class="fas fa-comment"></i> ${p.commentCount} · <i class="fas fa-heart"></i> ${p.likeCount} · <i class="fas fa-share"></i> ${getShareCount(p)}</span>
         </div>
         <div class="post-actions">
           <button class="action-btn ${liked ? 'active' : ''}" onclick="App.toggleLike('${p.id}')"><i class="fas fa-heart"></i> ${p.likeCount}</button>
@@ -529,7 +628,13 @@ const App = (() => {
       </div>
       <p style="line-height:1.7;margin-bottom:12px;">${escapeHtml(post.content)}</p>
       <div class="post-tags" style="margin-bottom:12px;">${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
-      <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:16px;">${escapeHtml(post.authorName)} · ${formatTime(post.createdAt)}</p>
+      <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:16px;">
+        <span class="post-author" style="display:inline-flex;margin:0;" onclick="App.openUserProfile('${post.authorId}')">
+          <span class="post-author-avatar" style="width:24px;height:24px;font-size:0.85rem;">${getUserProfile(post.authorId).avatar}</span>
+          <span class="post-author-name">${escapeHtml(post.authorName)}</span>
+        </span>
+        · ${formatTime(post.createdAt)}
+      </p>
       <h3 style="margin-bottom:8px;font-size:0.95rem;">评论 (${commentTotal})</h3>
       ${commentsHtml}
       <div class="comment-input-row">
@@ -640,7 +745,7 @@ const App = (() => {
       id: 'post_' + Date.now(), type, sectionId: 'life', title, content,
       images: [], tags, authorId: USER_ID, authorName: state.nickname,
       createdAt: new Date().toISOString(),
-      likeCount: 0, commentCount: 0, favoriteCount: 0, usefulCount: 0,
+      likeCount: 0, commentCount: 0, favoriteCount: 0, usefulCount: 0, shareCount: 0,
       usefulBy: []
     };
     state.posts.unshift(newPost);
@@ -677,7 +782,7 @@ const App = (() => {
         ${menuItemHtml("App.openProfileSub('favorites')", 'fas fa-star', '我的收藏')}
         ${menuItemHtml("App.openProfileSub('history')", 'fas fa-clock', '浏览历史')}
         ${menuItemHtml("App.openProfileSub('likesComments')", 'fas fa-heart', '点赞/评论记录')}
-        ${menuItemHtml("App.openProfileSub('follow')", 'fas fa-user-plus', '关注管理')}
+        ${menuItemHtml("App.openProfileSub('follow')", 'fas fa-user-plus', '我的关注')}
         ${menuItemHtml("App.openProfileSub('notifications')", 'fas fa-bell', '系统通知', { badge: unread || null })}
       </div>
       <div class="menu-group">
@@ -702,7 +807,7 @@ const App = (() => {
     sub.classList.remove('hidden');
     const titles = {
       myQuestions: '我的提问', favorites: '我的收藏', history: '浏览历史',
-      likesComments: '点赞/评论记录', follow: '关注管理', notifications: '系统通知',
+      likesComments: '点赞/评论记录', follow: '我的关注', notifications: '系统通知',
       settings: '设置管理', accountSecurity: '账号安全', generalSettings: '通用设置',
       privacySettings: '隐私设置', helpFeedback: '帮助与反馈', about: '关于我们',
       drafts: '草稿箱', posts: '发帖记录', collectedQuestions: '收藏问题'
@@ -793,11 +898,21 @@ const App = (() => {
           ${myComments.length ? myComments.map(c => `<div class="list-entry"><div class="list-entry-title">${escapeHtml(c.content)}</div><div class="list-entry-desc">${formatTime(c.createdAt)}</div></div>`).join('') : '<div class="empty-state" style="padding:16px;"><p>暂无评论</p></div>'}`;
         break;
       case 'follow':
-        el.innerHTML = FOLLOW_LIST.map(f => `
-          <div class="setting-item">
-            <div><div style="font-weight:600;">${f.name}</div><div style="font-size:0.8rem;color:var(--text-secondary);">${f.desc}</div></div>
-            <button class="toggle ${state.followList.includes(f.id) ? 'on' : ''}" onclick="App.toggleFollow('${f.id}',this)"></button>
-          </div>`).join('');
+        el.innerHTML = `<div class="menu-group" style="margin:12px 16px;">` +
+          FOLLOW_LIST.map(f => {
+            const profile = getUserProfile(f.id);
+            return `
+          <div class="follow-item">
+            <div class="follow-user-info" onclick="App.openUserProfile('${f.id}')">
+              <div class="follow-avatar">${profile.avatar}</div>
+              <div>
+                <div class="follow-name">${escapeHtml(f.name)}</div>
+                <div class="follow-desc">${escapeHtml(f.desc)}</div>
+              </div>
+            </div>
+            <button class="toggle ${state.followList.includes(f.id) ? 'on' : ''}" onclick="event.stopPropagation();App.toggleFollow('${f.id}',this)"></button>
+          </div>`;
+          }).join('') + `</div>`;
         break;
       case 'notifications':
         el.innerHTML = state.notifications.map(n => `
@@ -988,7 +1103,8 @@ const App = (() => {
     toggleReplyForm, submitReply,
     showPostMenu, reportPost, submitReport, blockUser, submitComment,
     showPublishForm, previewImages, submitPost, saveDraft,
-    openProfileSub, backProfile, editNickname, editDraft, toggleFollow,
+    openProfileSub, backProfile, editNickname, editDraft, toggleFollow, toggleFollowFromProfile,
+    openUserProfile, backFromUserProfile,
     readNotification, toggleSetting, setFontSize, setPrivacy,
     changePassword, bindPhone, logout, contactSupport, reportIssue,
     showAgreement, showPrivacy

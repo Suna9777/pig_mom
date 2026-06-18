@@ -92,7 +92,7 @@ export function ProfileScreen({ navigation }: Props) {
         </View>
 
         <View style={[styles.section, { backgroundColor: colors.card, marginTop: 12 }]}>
-          <SettingItem icon="people" title="关注" onPress={() => navigation.navigate('Follow')} />
+          <SettingItem icon="people" title="我的关注" onPress={() => navigation.navigate('Follow')} />
           <SettingItem
             icon="notifications"
             title="系统通知"
