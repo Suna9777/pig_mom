@@ -262,10 +262,36 @@ const App = (() => {
           <div class="modal-body">${bodyHtml}</div>
         </div>
       </div>`;
+    bindModalClose(container, onClose);
+  }
+
+  function showCenterModal(title, bodyHtml, onClose) {
+    const container = document.getElementById('modalContainer');
+    container.innerHTML = `
+      <div class="modal-overlay modal-overlay--center" id="modalOverlay">
+        <div class="modal-box modal-box--center">
+          <div class="modal-header">
+            <h2>${title}</h2>
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="modal-body">${bodyHtml}</div>
+        </div>
+      </div>`;
+    bindModalClose(container, onClose);
+  }
+
+  function bindModalClose(container, onClose) {
     const overlay = document.getElementById('modalOverlay');
     const close = () => { container.innerHTML = ''; if (onClose) onClose(); };
     document.getElementById('modalClose').onclick = close;
     overlay.onclick = (e) => { if (e.target === overlay) close(); };
+  }
+
+  function showAccountSecurityModal() {
+    showCenterModal(
+      '账号安全',
+      '<p style="text-align:center;color:var(--text-secondary);padding:32px 8px;">功能开发中，敬请期待…</p>'
+    );
   }
 
   function closeModal() {
@@ -924,7 +950,7 @@ const App = (() => {
       case 'settings':
         el.innerHTML = `
           <div class="menu-group" style="margin:12px 16px;">
-            ${menuItemHtml("App.openProfileSub('accountSecurity')", 'fas fa-lock', '账号安全')}
+            ${menuItemHtml('App.showAccountSecurityModal()', 'fas fa-lock', '账号安全')}
             ${menuItemHtml("App.openProfileSub('generalSettings')", 'fas fa-sliders-h', '通用设置')}
             ${menuItemHtml("App.openProfileSub('privacySettings')", 'fas fa-user-shield', '隐私设置')}
             ${menuItemHtml("App.openProfileSub('helpFeedback')", 'fas fa-life-ring', '帮助与反馈')}
@@ -1107,6 +1133,6 @@ const App = (() => {
     openUserProfile, backFromUserProfile,
     readNotification, toggleSetting, setFontSize, setPrivacy,
     changePassword, bindPhone, logout, contactSupport, reportIssue,
-    showAgreement, showPrivacy
+    showAgreement, showPrivacy, showAccountSecurityModal
   };
 })();
