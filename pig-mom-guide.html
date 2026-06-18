@@ -1,0 +1,1452 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>猪猪妈妈 · 华中师范大学生活指南</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #E85D75;
+      --primary-light: #FFE8EC;
+      --secondary: #3A86FF;
+      --bg: #F5F6FA;
+      --card: #FFFFFF;
+      --text: #1A1A2E;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --nav-h: 60px;
+      --header-h: 52px;
+      --radius: 12px;
+      --font-base: 14px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    [data-theme="dark"] {
+      --primary: #FF7B93;
+      --primary-light: #3D2028;
+      --secondary: #6BA3FF;
+      --bg: #121218;
+      --card: #1E1E28;
+      --text: #F0F0F5;
+      --text-secondary: #9CA3AF;
+      --border: #2D2D3A;
+      --shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    [data-font="small"] { --font-base: 13px; }
+    [data-font="large"] { --font-base: 16px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: var(--font-base); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg); color: var(--text);
+      max-width: 428px; min-width: 375px; margin: 0 auto;
+      min-height: 100vh; overflow-x: hidden;
+    }
+    .app { padding-bottom: calc(var(--nav-h) + var(--safe-bottom)); min-height: 100vh; }
+    .hidden { display: none !important; }
+    /* Header */
+    .page-header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--card); border-bottom: 1px solid var(--border);
+      height: var(--header-h); display: flex; align-items: center;
+      padding: 0 16px; gap: 12px;
+    }
+    .page-header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .back-btn { background: none; border: none; color: var(--primary); font-size: 1.1rem; cursor: pointer; padding: 8px; }
+    /* Search */
+    .search-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 8px 14px; margin: 12px 16px;
+    }
+    .search-bar input { flex: 1; border: none; background: transparent; color: var(--text); font-size: 0.95rem; outline: none; }
+    .search-bar i { color: var(--text-secondary); }
+    /* Section Grid */
+    .home-banner { padding: 0 16px 8px; color: var(--text-secondary); font-size: 0.85rem; }
+    .section-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 16px 16px; }
+    .section-card {
+      background: var(--card); border-radius: var(--radius); padding: 14px 8px;
+      text-align: center; cursor: pointer; box-shadow: var(--shadow);
+      transition: transform 0.15s; border: 1px solid var(--border);
+    }
+    .section-card:active { transform: scale(0.96); }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 1.2rem; color: #fff; }
+    .section-card h3 { font-size: 0.8rem; font-weight: 600; line-height: 1.3; }
+    .section-card p { font-size: 0.7rem; color: var(--text-secondary); margin-top: 4px; }
+    /* Search Results */
+    .search-results { padding: 0 16px 16px; }
+    .result-item {
+      background: var(--card); border-radius: var(--radius); padding: 12px;
+      margin-bottom: 8px; cursor: pointer; border: 1px solid var(--border);
+    }
+    .result-type { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
+    .result-title { font-weight: 600; margin: 4px 0; }
+    .result-desc { font-size: 0.85rem; color: var(--text-secondary); }
+    /* Section Detail */
+    .sub-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--card); }
+    .sub-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: var(--text-secondary); font-weight: 500; border-bottom: 2px solid transparent; }
+    .sub-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+    .item-list { padding: 12px 16px; }
+    .item-card {
+      background: var(--card); border-radius: var(--radius); padding: 14px;
+      margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .item-card:active { background: var(--primary-light); }
+    .item-title { font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .tag-campus { background: #DBEAFE; color: #1D4ED8; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    .tag-exp { background: #FEF3C7; color: #B45309; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    [data-theme="dark"] .tag-campus { background: #1E3A5F; color: #93C5FD; }
+    [data-theme="dark"] .tag-exp { background: #3D2E0A; color: #FCD34D; }
+    .item-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+    .item-step { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+    /* Community */
+    .tag-filter { display: flex; gap: 8px; padding: 8px 16px; overflow-x: auto; scrollbar-width: none; background: var(--card); border-bottom: 1px solid var(--border); }
+    .tag-filter::-webkit-scrollbar { display: none; }
+    .filter-tag { flex-shrink: 0; padding: 6px 14px; border-radius: 16px; font-size: 0.8rem; cursor: pointer; background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+    .filter-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .post-list { padding: 12px 16px; }
+    .post-card { background: var(--card); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); position: relative; }
+    .post-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .post-type { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+    .post-type.help { background: #FEE2E2; color: #DC2626; }
+    .post-type.share { background: #D1FAE5; color: #059669; }
+    .post-type.trade { background: #DBEAFE; color: #2563EB; }
+    [data-theme="dark"] .post-type.help { background: #3D1515; color: #FCA5A5; }
+    [data-theme="dark"] .post-type.share { background: #0D3321; color: #6EE7B7; }
+    [data-theme="dark"] .post-type.trade { background: #1E3A5F; color: #93C5FD; }
+    .post-menu { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px 8px; font-size: 1rem; }
+    .post-title { font-weight: 600; margin: 8px 0 6px; cursor: pointer; }
+    .post-content { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+    .post-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: var(--bg); color: var(--text-secondary); }
+    .post-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px; }
+    .post-actions { display: flex; gap: 4px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
+    .action-btn {
+      flex: 1; min-width: 60px; display: flex; align-items: center; justify-content: center; gap: 4px;
+      background: none; border: none; color: var(--text-secondary); font-size: 0.75rem;
+      cursor: pointer; padding: 6px; border-radius: 8px;
+    }
+    .action-btn:active, .action-btn.active { color: var(--primary); background: var(--primary-light); }
+    .resolved-badge { background: #D1FAE5; color: #059669; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+    .fab {
+      position: fixed; bottom: calc(var(--nav-h) + 16px + var(--safe-bottom));
+      right: 20px; width: 52px; height: 52px; border-radius: 50%;
+      background: var(--primary); color: #fff; border: none; font-size: 1.3rem;
+      box-shadow: 0 4px 16px rgba(232,93,117,0.4); cursor: pointer; z-index: 50;
+    }
+    .fab:active { transform: scale(0.95); }
+    /* Profile */
+    .profile-header { background: linear-gradient(135deg, var(--primary), #FF9A8B); padding: 24px 16px; color: #fff; }
+    .profile-info { display: flex; align-items: center; gap: 14px; }
+    .avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 2rem; border: 2px solid rgba(255,255,255,0.5); }
+    .profile-name { font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+    .profile-id { font-size: 0.8rem; opacity: 0.85; margin-top: 4px; }
+    .menu-list { padding: 12px 16px; }
+    .menu-group { background: var(--card); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; border: 1px solid var(--border); }
+    .menu-item {
+      display: flex; align-items: center; padding: 14px 16px; cursor: pointer;
+      border-bottom: 1px solid var(--border); gap: 12px;
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:active { background: var(--primary-light); }
+    .menu-item i { width: 20px; color: var(--primary); text-align: center; }
+    .menu-item span { flex: 1; }
+    .menu-item .arrow { color: var(--text-secondary); font-size: 0.8rem; }
+    .menu-badge { background: var(--primary); color: #fff; font-size: 0.7rem; padding: 1px 6px; border-radius: 10px; }
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 428px; height: calc(var(--nav-h) + var(--safe-bottom));
+      background: var(--card); border-top: 1px solid var(--border);
+      display: flex; z-index: 200; padding-bottom: var(--safe-bottom);
+    }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: var(--text-secondary); border: none; background: none; font-size: 0.7rem; padding: 6px; }
+    .nav-item i { font-size: 1.2rem; }
+    .nav-item.active { color: var(--primary); }
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .modal-box {
+      background: var(--card); width: 100%; max-width: 428px;
+      max-height: 85vh; border-radius: 16px 16px 0 0;
+      overflow-y: auto; animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--card); z-index: 1; }
+    .modal-header h2 { font-size: 1rem; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 1.2rem; color: var(--text-secondary); cursor: pointer; padding: 4px; }
+    .modal-body { padding: 16px; line-height: 1.7; }
+    .modal-body .info-row { display: flex; margin: 8px 0; font-size: 0.9rem; }
+    .modal-body .info-label { width: 50px; color: var(--text-secondary); flex-shrink: 0; }
+    /* Form */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--bg); color: var(--text); font-size: 0.9rem;
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .tag-select { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-option { padding: 6px 12px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer; font-size: 0.8rem; }
+    .tag-option.selected { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary {
+      width: 100%; padding: 12px; background: var(--primary); color: #fff;
+      border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-primary:active { opacity: 0.85; }
+    .btn-secondary { width: 100%; padding: 12px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 10px; font-size: 0.9rem; cursor: pointer; margin-top: 8px; }
+    .img-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .img-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; }
+    /* Settings */
+    .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .setting-item:last-child { border-bottom: none; }
+    .toggle { width: 44px; height: 24px; background: var(--border); border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; border: none; }
+    .toggle.on { background: var(--primary); }
+    .toggle::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: transform 0.2s; }
+    .toggle.on::after { transform: translateX(20px); }
+    .setting-select { padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 0.85rem; }
+    /* Comments */
+    .comment-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .comment-author { font-weight: 600; font-size: 0.85rem; }
+    .comment-reply { font-size: 0.75rem; color: var(--secondary); margin-left: 8px; }
+    .comment-text { font-size: 0.85rem; margin-top: 4px; line-height: 1.5; }
+    .comment-time { font-size: 0.7rem; color: var(--text-secondary); margin-top: 4px; }
+    .comment-input-row { display: flex; gap: 8px; margin-top: 12px; }
+    .comment-input-row input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); color: var(--text); }
+    .comment-input-row button { padding: 8px 16px; background: var(--primary); color: #fff; border: none; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
+    /* Toast */
+    .toast {
+      position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.8); color: #fff; padding: 10px 20px;
+      border-radius: 20px; font-size: 0.85rem; z-index: 999; pointer-events: none;
+      animation: fadeInOut 2s ease forwards;
+    }
+    @keyframes fadeInOut { 0%,100% { opacity: 0; } 10%,80% { opacity: 1; } }
+    /* Sub pages */
+    .sub-page { min-height: calc(100vh - var(--nav-h)); }
+    .empty-state { text-align: center; padding: 40px 16px; color: var(--text-secondary); }
+    .empty-state i { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+    .list-entry { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .list-entry:active { background: var(--primary-light); }
+    .list-entry-title { font-weight: 600; }
+    .list-entry-desc { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+    .faq-item { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .faq-q { font-weight: 600; margin-bottom: 6px; }
+    .faq-a { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+    .about-info { text-align: center; padding: 32px 16px; }
+    .about-logo { font-size: 3rem; margin-bottom: 12px; }
+    .about-version { color: var(--text-secondary); margin-top: 8px; }
+    .text-content { padding: 16px; line-height: 1.8; font-size: 0.9rem; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- 主页 Tab -->
+    <div id="tab-home" class="tab-panel">
+      <div id="home-main">
+        <div class="page-header"><h1>🐷 猪猪妈妈</h1></div>
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="搜索校园生活指南…" autocomplete="off">
+          <button id="clearSearch" class="hidden" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="home-banner">校园生活全能指南 · 武汉 · 华中师范大学</div>
+        <div class="section-grid" id="sectionGrid"></div>
+        <div class="search-results hidden" id="searchResults"></div>
+      </div>
+      <div id="section-detail" class="sub-page hidden">
+        <div class="page-header">
+          <button class="back-btn" onclick="App.goBackSection()"><i class="fas fa-arrow-left"></i></button>
+          <h1 id="sectionDetailTitle">板块详情</h1>
+        </div>
+        <div class="sub-tabs" id="sectionSubTabs"></div>
+        <div class="item-list" id="sectionItemList"></div>
+      </div>
+    </div>
+
+    <!-- 社群 Tab -->
+    <div id="tab-community" class="tab-panel hidden">
+      <div class="page-header"><h1>社群</h1></div>
+      <div class="tag-filter" id="tagFilter"></div>
+      <div class="post-list" id="postList"></div>
+      <button class="fab" id="fabPublish" title="发布"><i class="fas fa-plus"></i></button>
+    </div>
+
+    <!-- 我的 Tab -->
+    <div id="tab-profile" class="tab-panel hidden">
+      <div id="profile-main">
+        <div class="profile-header">
+          <div class="profile-info">
+            <div class="avatar">🐷</div>
+            <div>
+              <div class="profile-name" id="profileNickname" onclick="App.editNickname()">猪猪妈妈</div>
+              <div class="profile-id" id="profileId">ID: user_001</div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-list" id="profileMenu"></div>
+      </div>
+      <div id="profile-sub" class="sub-page hidden"></div>
+    </div>
+  </div>
+
+  <!-- 底部导航 -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-tab="home"><i class="fas fa-home"></i><span>主页</span></button>
+    <button class="nav-item" data-tab="community"><i class="fas fa-users"></i><span>社群</span></button>
+    <button class="nav-item" data-tab="profile"><i class="fas fa-user"></i><span>我的</span></button>
+  </nav>
+
+  <!-- 模态框容器 -->
+  <div id="modalContainer"></div>
+
+  <script>
+/* ========== 猪猪妈妈 · 数据层（硬编码模拟数据库） ========== */
+
+const SECTIONS = [
+  { id: 'health', title: '医疗与健康', icon: '🏥', color: '#FF6B6B', description: '校医院、医保、就医指南' },
+  { id: 'transport', title: '出行与交通', icon: '🚌', color: '#4ECDC4', description: '地铁、公交、共享单车' },
+  { id: 'life', title: '生活与服务', icon: '🏠', color: '#FFE66D', description: '水电网、快递、洗衣' },
+  { id: 'finance', title: '消费与理财', icon: '💰', color: '#95E1D3', description: '银行卡、优惠、记账' },
+  { id: 'certificate', title: '证件办理', icon: '📄', color: '#F38181', description: '身份证、护照、居住证' },
+  { id: 'career', title: '职场与社保', icon: '💼', color: '#AA96DA', description: '实习、社保、公积金' },
+  { id: 'legal', title: '法律与安全', icon: '🛡️', color: '#FCBAD3', description: '维权、防骗、安全' },
+  { id: 'social', title: '社交与人际', icon: '👥', color: '#A8D8EA', description: '社团、交友、活动' },
+  { id: 'study', title: '学习', icon: '📚', color: '#3A86FF', description: '图书馆、选课、考研' }
+];
+
+const SECTION_MAP = Object.fromEntries(SECTIONS.map(s => [s.id, s]));
+
+const BASIC_ARTICLES = (() => {
+  const templates = {
+    health: {
+      titles: ['大学生医保报销流程', '武汉市就医指南', '常见药品购买', '心理健康咨询', '疫苗接种须知'],
+      steps: [
+        ['携带学生证和医保卡', '到校医院挂号', '医生诊断开药', '窗口结算报销'],
+        ['选择定点医院', '预约挂号', '携带身份证就医', '保留发票凭证'],
+        ['校医院药房购药', '校外连锁药店', '线上问诊购药', '注意处方药规定'],
+        ['预约心理咨询', '填写心理测评', '与咨询师面谈', '定期跟进'],
+        ['关注学校通知', '预约接种时间', '携带证件', '留观30分钟']
+      ]
+    },
+    transport: {
+      titles: ['武汉地铁乘坐指南', '公交卡办理', '共享单车使用', '机场/火车站出行', '校园班车信息'],
+      steps: [
+        ['下载Metro新时代APP', '扫码或购票进站', '注意末班车时间', '保管好乘车凭证'],
+        ['携带身份证', '到指定网点办理', '充值使用', '可绑定手机'],
+        ['下载对应APP', '扫码解锁', '规范停放', '注意安全'],
+        ['查时刻表', '预留充足时间', '选择合适交通', '保管行李'],
+        ['查看发车时刻', '提前到站点', '刷校园卡', '遵守秩序']
+      ]
+    },
+    life: {
+      titles: ['宿舍水电缴费', '快递收发指南', '洗衣房使用', '食堂就餐攻略', '校园网办理'],
+      steps: [
+        ['关注后勤公众号', '查询账单', '在线缴费', '保留凭证'],
+        ['记住取件码', '按时取件', '大件联系配送', '贵重物品当面签收'],
+        ['投币或刷卡', '选择洗涤模式', '及时取衣', '保持整洁'],
+        ['错峰就餐', '使用校园卡', '注意营养搭配', '反馈意见建议'],
+        ['到网络中心', '选择套餐', '安装认证客户端', '连接校园网']
+      ]
+    },
+    finance: {
+      titles: ['银行卡办理', '学生优惠汇总', '记账理财入门', '防诈骗指南', '兼职收入管理'],
+      steps: [
+        ['选择银行网点', '携带身份证', '填写开户申请', '设置密码'],
+        ['关注商家学生优惠', '使用学生身份认证', '合理消费', '保留小票'],
+        ['记录收支', '制定预算', '避免冲动消费', '学习基础理财'],
+        ['不轻信陌生链接', '保护个人信息', '核实对方身份', '及时报警'],
+        ['签订正规合同', '保留工资条', '依法纳税', '合理规划']
+      ]
+    },
+    certificate: {
+      titles: ['身份证办理/补办', '护照办理流程', '居住证申请', '港澳通行证', '学籍证明办理'],
+      steps: [
+        ['网上预约', '到派出所办理', '拍照采集', '领取证件'],
+        ['到出入境大厅', '提交材料', '缴费', '等待制证'],
+        ['准备居住证明', '到政务中心', '填写申请表', '等待审核'],
+        ['网上预约', '提交材料', '缴费', '领取证件'],
+        ['到教务处申请', '填写表格', '等待审核', '领取证明']
+      ]
+    },
+    career: {
+      titles: ['实习协议签订', '社保缴纳说明', '公积金提取', '简历制作技巧', '面试准备指南'],
+      steps: [
+        ['了解公司背景', '审阅合同条款', '确认实习时间', '保留合同副本'],
+        ['了解缴纳基数', '确认缴纳时间', '查询缴纳记录', '保留凭证'],
+        ['满足提取条件', '准备材料', '到公积金中心', '等待到账'],
+        ['突出校园经历', '量化成果', '格式规范', '针对性修改'],
+        ['了解公司文化', '准备常见问题', '着装得体', '准时到达']
+      ]
+    },
+    legal: {
+      titles: ['消费维权途径', '租房合同注意事项', '网络诈骗防范', '校园安全须知', '知识产权基础'],
+      steps: [
+        ['保留购物凭证', '与商家协商', '向消协投诉', '必要时诉讼'],
+        ['审阅合同条款', '确认押金规则', '拍照留证', '保留聊天记录'],
+        ['不点陌生链接', '不透露验证码', '核实官方渠道', '及时报警'],
+        ['遵守门禁制度', '注意财物保管', '夜间结伴出行', '报告可疑情况'],
+        ['尊重他人著作权', '引用注明出处', '不使用盗版', '了解相关规定']
+      ]
+    },
+    social: {
+      titles: ['社团加入指南', '校园活动参与', '人际交往技巧', '志愿者报名', '校友资源利用'],
+      steps: [
+        ['关注社团招新', '参加体验活动', '提交申请', '积极参与活动'],
+        ['关注学校通知', '提前报名', '准时参加', '分享感受'],
+        ['真诚待人', '尊重差异', '主动沟通', '保持边界'],
+        ['关注志愿平台', '选择感兴趣项目', '按时服务', '记录时长'],
+        ['加入校友群', '参加校友活动', '礼貌请教', '回馈母校']
+      ]
+    },
+    study: {
+      titles: ['图书馆使用指南', '选课系统操作', '考研时间规划', '四六级备考', '学术资源获取'],
+      steps: [
+        ['办理借阅证', '了解开放时间', '遵守借阅规则', '按时归还'],
+        ['关注选课通知', '了解课程信息', '准时登录系统', '确认选课结果'],
+        ['确定目标院校', '制定复习计划', '定期模拟测试', '调整策略'],
+        ['积累词汇', '练习听力', '刷真题', '关注报名时间'],
+        ['使用数据库', '请教导师', '参加讲座', '加入学习小组']
+      ]
+    }
+  };
+  const articles = [];
+  Object.entries(templates).forEach(([sectionId, data]) => {
+    data.titles.forEach((title, i) => {
+      articles.push({
+        id: `article_${sectionId}_${i + 1}`,
+        sectionId,
+        type: 'article',
+        title,
+        steps: data.steps[i],
+        officialUrl: 'https://www.ccnu.edu.cn/',
+        officialName: '华中师范大学官网'
+      });
+    });
+  });
+  return articles;
+})();
+
+const CCNU_INFOS = [
+  { id: 'ccnu_1', sectionId: 'health', type: 'ccnu', title: '校医院', address: '桂苑食堂旁', time: '8:00-17:30', price: '挂号1-5元', phone: '027-67867237', description: '校内首选就医地点，支持大学生医保' },
+  { id: 'ccnu_2', sectionId: 'health', type: 'ccnu', title: '心理中心', address: '大学生心理发展研究与指导中心', time: '预约制', price: '免费', phone: '027-67868686', description: '提供免费心理咨询服务' },
+  { id: 'ccnu_3', sectionId: 'health', type: 'ccnu', title: '周边三甲-同济医院', address: '硚口区解放大道1095号', time: '24小时', price: '按医保', phone: '027-83662688', description: '校医院转诊推荐医院' },
+  { id: 'ccnu_4', sectionId: 'health', type: 'ccnu', title: '周边三甲-协和医院', address: '江汉区解放大道1277号', time: '24小时', price: '按医保', phone: '027-85726114', description: '综合医疗资源丰富' },
+  { id: 'ccnu_5', sectionId: 'health', type: 'ccnu', title: '医保办', address: '行政楼一楼', time: '工作日9:00-17:00', price: '免费', phone: '027-67868000', description: '医保政策咨询与报销' },
+  { id: 'ccnu_6', sectionId: 'transport', type: 'ccnu', title: '2号线广埠屯站', address: '珞喻路', time: '6:00-23:00', price: '2-7元', description: '距学校最近地铁站，步行约10分钟' },
+  { id: 'ccnu_7', sectionId: 'transport', type: 'ccnu', title: '591路公交', address: '广埠屯站', time: '6:00-22:00', price: '2元', description: '途经武昌火车站、街道口' },
+  { id: 'ccnu_8', sectionId: 'transport', type: 'ccnu', title: '校园摆渡车', address: '各校区站点', time: '7:00-22:00', price: '免费', description: '连接主校区与各生活区' },
+  { id: 'ccnu_9', sectionId: 'transport', type: 'ccnu', title: '共享单车停放点', address: '各宿舍区门口', time: '全天', price: '1.5元/30分钟', description: '美团、哈啰均有覆盖' },
+  { id: 'ccnu_10', sectionId: 'transport', type: 'ccnu', title: '武昌火车站', address: '中山路', time: '全天', price: '地铁4站', description: '乘2号线4站可达' },
+  { id: 'ccnu_11', sectionId: 'life', type: 'ccnu', title: '后勤集团', address: '行政楼', time: '8:00-17:00', price: '-', phone: '027-67867000', description: '水电、维修、宿舍管理' },
+  { id: 'ccnu_12', sectionId: 'life', type: 'ccnu', title: '菜鸟驿站', address: '各生活区', time: '9:00-20:00', price: '免费', description: '中通、圆通、韵达等' },
+  { id: 'ccnu_13', sectionId: 'life', type: 'ccnu', title: '顺丰速运', address: '东苑门口', time: '8:00-21:00', price: '按件', description: '大件快递首选' },
+  { id: 'ccnu_14', sectionId: 'life', type: 'ccnu', title: '洗衣房', address: '各宿舍楼一层', time: '6:00-23:00', price: '3-5元/次', description: '投币式洗衣机' },
+  { id: 'ccnu_15', sectionId: 'life', type: 'ccnu', title: '校园卡服务中心', address: '图书馆一楼', time: '9:00-17:00', price: '-', description: '充值、挂失、补办' },
+  { id: 'ccnu_16', sectionId: 'finance', type: 'ccnu', title: '建行华师支行', address: '广埠屯', time: '9:00-17:00', price: '-', description: '校园卡绑定银行' },
+  { id: 'ccnu_17', sectionId: 'finance', type: 'ccnu', title: '工商银行', address: '珞喻路', time: '9:00-17:00', price: '-', description: '可办理学生专属卡' },
+  { id: 'ccnu_18', sectionId: 'finance', type: 'ccnu', title: '学生优惠-海底捞', address: '群光广场', time: '全天', price: '69折', description: '凭学生证享受折扣' },
+  { id: 'ccnu_19', sectionId: 'finance', type: 'ccnu', title: '学生优惠-Apple', address: '线上', time: '全年', price: '教育优惠', description: 'Apple教育商店认证' },
+  { id: 'ccnu_20', sectionId: 'finance', type: 'ccnu', title: '勤工助学中心', address: '学工部', time: '工作日', price: '15-25元/时', description: '校内合法兼职渠道' },
+  { id: 'ccnu_21', sectionId: 'certificate', type: 'ccnu', title: '校内户口迁移', address: '保卫处', time: '工作日', price: '免费', description: '新生户口迁入办理' },
+  { id: 'ccnu_22', sectionId: 'certificate', type: 'ccnu', title: '学籍证明', address: '教务处', time: '工作日', price: '免费', description: '在读证明、成绩单' },
+  { id: 'ccnu_23', sectionId: 'certificate', type: 'ccnu', title: '洪山区政务中心', address: '珞狮路', time: '9:00-17:00', price: '-', description: '居住证、护照等办理' },
+  { id: 'ccnu_24', sectionId: 'certificate', type: 'ccnu', title: '南湖派出所', address: '南湖大道', time: '9:00-17:00', price: '-', description: '身份证办理' },
+  { id: 'ccnu_25', sectionId: 'certificate', type: 'ccnu', title: '出入境管理局', address: '市民之家', time: '9:00-17:00', price: '按证件', description: '护照、港澳通行证' },
+  { id: 'ccnu_26', sectionId: 'career', type: 'ccnu', title: '就业指导中心', address: '大学生活动中心', time: '8:30-17:00', price: '免费', phone: '027-67867221', description: '招聘会、简历指导' },
+  { id: 'ccnu_27', sectionId: 'career', type: 'ccnu', title: '实习实践基地', address: '各学院', time: '按安排', price: '-', description: '学院推荐实习岗位' },
+  { id: 'ccnu_28', sectionId: 'career', type: 'ccnu', title: '社保咨询窗口', address: '洪山区社保局', time: '9:00-17:00', price: '-', description: '社保政策咨询' },
+  { id: 'ccnu_29', sectionId: 'career', type: 'ccnu', title: '创业学院', address: '科技楼', time: '预约', price: '免费', description: '创业指导与孵化' },
+  { id: 'ccnu_30', sectionId: 'career', type: 'ccnu', title: '校友企业招聘', address: '线上+线下', time: '按通知', price: '-', description: '校友内推机会' },
+  { id: 'ccnu_31', sectionId: 'legal', type: 'ccnu', title: '法律援助中心', address: '法学院', time: '预约', price: '免费', description: '学生免费法律咨询' },
+  { id: 'ccnu_32', sectionId: 'legal', type: 'ccnu', title: '保卫处', address: '行政楼', time: '24小时值班', price: '-', phone: '027-67868110', description: '校园安全、报警' },
+  { id: 'ccnu_33', sectionId: 'legal', type: 'ccnu', title: '洪山区法院', address: '珞狮路', time: '9:00-17:00', price: '-', description: '诉讼立案' },
+  { id: 'ccnu_34', sectionId: 'legal', type: 'ccnu', title: '消费者协会', address: '武昌区', time: '9:00-17:00', price: '免费', description: '消费维权投诉' },
+  { id: 'ccnu_35', sectionId: 'legal', type: 'ccnu', title: '反诈中心', address: '线上', time: '全天', price: '免费', description: '96110反诈热线' },
+  { id: 'ccnu_36', sectionId: 'social', type: 'ccnu', title: '社团联合会', address: '大学生活动中心', time: '按活动', price: '免费', description: '100+学生社团' },
+  { id: 'ccnu_37', sectionId: 'social', type: 'ccnu', title: '青年志愿者协会', address: '团委', time: '按项目', price: '免费', description: '志愿活动报名' },
+  { id: 'ccnu_38', sectionId: 'social', type: 'ccnu', title: '学生会', address: '大学生活动中心', time: '按活动', price: '免费', description: '校园活动组织' },
+  { id: 'ccnu_39', sectionId: 'social', type: 'ccnu', title: '校友会', address: '线上', time: '全年', price: '免费', description: '校友资源对接' },
+  { id: 'ccnu_40', sectionId: 'social', type: 'ccnu', title: '国际交流处', address: '行政楼', time: '工作日', price: '按项目', description: '交换生、留学项目' },
+  { id: 'ccnu_41', sectionId: 'study', type: 'ccnu', title: '图书馆', address: '主校区中心', time: '7:00-22:00', price: '免费', description: '借阅、自习、数据库' },
+  { id: 'ccnu_42', sectionId: 'study', type: 'ccnu', title: '教务处', address: '行政楼', time: '8:00-17:00', price: '-', description: '选课、成绩、学籍' },
+  { id: 'ccnu_43', sectionId: 'study', type: 'ccnu', title: '考研自习室', address: '各学院', time: '7:00-23:00', price: '免费', description: '考研专用自习空间' },
+  { id: 'ccnu_44', sectionId: 'study', type: 'ccnu', title: '四六级报名', address: '线上', time: '按通知', price: '35元', description: 'cet-bm.neea.edu.cn' },
+  { id: 'ccnu_45', sectionId: 'study', type: 'ccnu', title: '知网/万方', address: '图书馆数据库', time: '全天', price: '免费', description: '校园网免费访问' }
+];
+
+const POSTS = [
+  { id: 'post_1', type: 'help', sectionId: 'health', title: '校医院看牙能报销吗？', content: '最近牙疼想去校医院看看，请问大学生医保能报销牙科吗？有没有同学有经验分享一下流程？需要提前预约吗？', images: [], tags: ['医疗', '求助'], authorId: 'user_2', authorName: '华师小白', createdAt: '2026-06-15T10:30:00Z', likeCount: 12, commentCount: 5, favoriteCount: 3, usefulCount: 8, resolved: false },
+  { id: 'post_2', type: 'share', sectionId: 'transport', title: '武汉地铁学生优惠攻略', content: '整理了武汉地铁各线路的学生出行Tips：2号线广埠屯站是最方便的，建议办Metro新时代APP，可以扫码乘车。周末去光谷、江汉路都很方便，末班车时间要注意。', images: [], tags: ['出行', '分享'], authorId: 'user_3', authorName: '珞喻路达人', createdAt: '2026-06-14T08:00:00Z', likeCount: 45, commentCount: 12, favoriteCount: 28, usefulCount: 0, resolved: false },
+  { id: 'post_3', type: 'trade', sectionId: 'life', title: '转让九成新自行车', content: '毕业出自行车，九成新，买时350现150出。有锁和篮子，适合在 campus 内通勤。东九宿舍区可面交。', images: [], tags: ['交易', '出行'], authorId: 'user_4', authorName: '毕业学长', createdAt: '2026-06-13T15:20:00Z', likeCount: 6, commentCount: 8, favoriteCount: 2, usefulCount: 0, resolved: false },
+  { id: 'post_4', type: 'help', sectionId: 'life', title: '东九附近有好的租房推荐吗？', content: '下学期想搬出宿舍租房，预算1500左右，希望离学校近、安全。有没有推荐的区域或中介？避免踩坑经验也欢迎分享！', images: [], tags: ['租房', '求助'], authorId: 'user_5', authorName: '找房萌新', createdAt: '2026-06-12T09:00:00Z', likeCount: 18, commentCount: 15, favoriteCount: 10, usefulCount: 5, resolved: true },
+  { id: 'post_5', type: 'share', sectionId: 'study', title: '图书馆抢座攻略——期末版', content: '期末图书馆一座难求，分享我的抢座经验：7点前到可以占到好位置，二三楼靠窗最抢手。记得带校园卡，临时离开要在系统里登记，超过30分钟会被清座。', images: [], tags: ['学习', '分享'], authorId: 'user_1', authorName: '猪猪妈妈', createdAt: '2026-06-11T07:00:00Z', likeCount: 89, commentCount: 23, favoriteCount: 56, usefulCount: 0, resolved: false },
+  { id: 'post_6', type: 'share', sectionId: 'finance', title: '华师周边美食穷鬼套餐', content: '广埠屯周边性价比美食汇总：桂苑食堂二楼麻辣香锅、广八路的新疆大盘鸡、群光负一楼的小吃。人均20-30元，学生党友好。', images: [], tags: ['美食', '分享'], authorId: 'user_3', authorName: '珞喻路达人', createdAt: '2026-06-10T12:00:00Z', likeCount: 67, commentCount: 19, favoriteCount: 42, usefulCount: 0, resolved: false },
+  { id: 'post_7', type: 'help', sectionId: 'certificate', title: '护照办理需要哪些材料？', content: '打算暑假出国旅游，第一次办护照，户口已迁入学校。请问需要带什么材料？去哪个窗口办？大概多久能拿到？', images: [], tags: ['证件', '求助'], authorId: 'user_6', authorName: '旅行计划er', createdAt: '2026-06-09T14:00:00Z', likeCount: 9, commentCount: 7, favoriteCount: 4, usefulCount: 3, resolved: false },
+  { id: 'post_8', type: 'trade', sectionId: 'study', title: '出考研政治资料', content: '肖秀荣全套+徐涛笔记，几乎全新，50元全套。还有英语真题试卷若干，可单买。南湖校区面交。', images: [], tags: ['学习', '交易'], authorId: 'user_7', authorName: '上岸学姐', createdAt: '2026-06-08T16:30:00Z', likeCount: 4, commentCount: 3, favoriteCount: 1, usefulCount: 0, resolved: false }
+];
+
+const COMMENTS = [
+  { id: 'c1', postId: 'post_1', authorId: 'user_3', authorName: '珞喻路达人', content: '校医院牙科可以报销一部分，建议先挂号咨询。', createdAt: '2026-06-15T11:00:00Z' },
+  { id: 'c2', postId: 'post_1', authorId: 'user_1', authorName: '猪猪妈妈', content: '我去年看过，拔智齿报销了60%左右。', createdAt: '2026-06-15T12:00:00Z', replyToId: 'c1', replyToName: '珞喻路达人' },
+  { id: 'c3', postId: 'post_2', authorId: 'user_5', authorName: '找房萌新', content: '太有用了，收藏！', createdAt: '2026-06-14T09:00:00Z' },
+  { id: 'c4', postId: 'post_4', authorId: 'user_3', authorName: '珞喻路达人', content: '推荐南湖周边，性价比高，注意安全选正规中介。', createdAt: '2026-06-12T10:00:00Z' },
+  { id: 'c5', postId: 'post_5', authorId: 'user_2', authorName: '华师小白', content: '期末真的抢不到座，感谢分享！', createdAt: '2026-06-11T08:00:00Z' }
+];
+
+const EXPERIENCES = POSTS.filter(p => p.type === 'share' || p.type === 'help').map(p => ({
+  id: `exp_${p.id}`,
+  sectionId: p.sectionId,
+  type: 'experience',
+  postId: p.id,
+  title: p.title,
+  summary: p.content.slice(0, 80) + (p.content.length > 80 ? '...' : ''),
+  content: p.content
+}));
+
+const PRESET_TAGS = ['全部', '租房', '美食', '出行', '学习', '医疗', '兼职', '证件', '法律', '社交', '交易', '求助', '分享'];
+const POST_TYPE_LABELS = { help: '求助', share: '分享', trade: '交易' };
+const REPORT_REASONS = ['垃圾广告', '违法违规', '人身攻击', '虚假信息', '侵权内容', '其他'];
+
+const FAQ = [
+  { id: 'f1', q: '如何修改昵称？', a: '进入「我的」页面，点击昵称即可编辑。' },
+  { id: 'f2', q: '帖子如何删除？', a: '在「我的提问」中找到对应帖子，点击删除按钮。' },
+  { id: 'f3', q: '如何屏蔽用户？', a: '在帖子详情页点击更多，选择屏蔽该用户；也可在设置中管理。' },
+  { id: 'f4', q: '搜索历史如何清除？', a: '在搜索栏下方点击「清除历史」即可。' },
+  { id: 'f5', q: '草稿如何恢复？', a: '进入「我的」-「草稿箱」，点击草稿继续编辑发布。' },
+  { id: 'f6', q: '如何联系客服？', a: '在「帮助与反馈」中可发送邮件至 support@pigmom.ccnu.edu.cn' }
+];
+
+const USER_AGREEMENT = `猪猪妈妈用户协议
+
+欢迎使用猪猪妈妈App。本App面向华中师范大学在校学生，提供校园生活信息服务。
+
+1. 用户应遵守法律法规及校规校纪。
+2. 发布内容需真实、合法，不得传播虚假信息。
+3. 本平台有权对违规内容进行处理。
+4. 用户数据仅用于改善服务体验。
+
+继续使用即表示同意本协议。`;
+
+const PRIVACY_POLICY = `猪猪妈妈隐私政策
+
+我们重视您的隐私保护。
+
+1. 收集信息：昵称、头像、发帖内容等。
+2. 存储方式：本地存储，未来可能同步至云端。
+3. 信息使用：仅用于App功能实现。
+4. 您可随时清除本地数据。
+
+如有疑问请联系 support@pigmom.ccnu.edu.cn`;
+
+const NOTIFICATIONS = [
+  { id: 'n1', type: 'reply', title: '新回复', content: '珞喻路达人回复了你的帖子「校医院看牙能报销吗？」', postId: 'post_1', read: false, createdAt: '2026-06-15T12:00:00Z' },
+  { id: 'n2', type: 'like', title: '收到点赞', content: '华师小白赞了你的分享「图书馆抢座攻略——期末版」', postId: 'post_5', read: false, createdAt: '2026-06-11T09:00:00Z' },
+  { id: 'n3', type: 'system', title: '系统通知', content: '欢迎使用猪猪妈妈！完善个人信息可获得更多推荐。', read: true, createdAt: '2026-06-01T08:00:00Z' }
+];
+
+const FOLLOW_LIST = [
+  { id: 'user_2', name: '华师小白', desc: '经常分享校园生活' },
+  { id: 'user_3', name: '珞喻路达人', desc: '出行美食达人' },
+  { id: 'user_4', name: '毕业学长', desc: '毕业季好物转让' }
+];
+</script>
+  <script>
+/* ========== 猪猪妈妈 · 应用逻辑层 ========== */
+
+const App = (() => {
+  const USER_ID = 'user_001';
+  const STORAGE_KEY = 'pigmom_app_state';
+
+  let state = loadState();
+  let currentTab = 'home';
+  let currentSection = null;
+  let currentSectionTab = 'basic';
+  let currentTagFilter = '全部';
+  let profileSubPage = null;
+  let blockedUsers = new Set(state.blockedUsers || []);
+  let blockedPosts = new Set(state.blockedPosts || []);
+
+  function defaultState() {
+    return {
+      nickname: '猪猪妈妈',
+      posts: JSON.parse(JSON.stringify(POSTS)),
+      comments: JSON.parse(JSON.stringify(COMMENTS)),
+      notifications: JSON.parse(JSON.stringify(NOTIFICATIONS)),
+      browseHistory: [],
+      favorites: { articles: [], posts: [], experiences: [] },
+      likedPosts: [],
+      myPosts: [],
+      drafts: [],
+      settings: {
+        pushEnabled: true,
+        darkMode: false,
+        fontSize: 'medium',
+        recordHistory: true,
+        commentPermission: 'all',
+        profileVisibility: 'all'
+      },
+      blockedUsers: [],
+      blockedPosts: [],
+      followList: FOLLOW_LIST.map(f => f.id)
+    };
+  }
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...defaultState(), ...parsed, settings: { ...defaultState().settings, ...parsed.settings } };
+      }
+    } catch (e) { /* ignore */ }
+    return defaultState();
+  }
+
+  function saveState() {
+    state.blockedUsers = [...blockedUsers];
+    state.blockedPosts = [...blockedPosts];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    applyTheme();
+  }
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', state.settings.darkMode ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-font', state.settings.fontSize);
+  }
+
+  function toast(msg) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = (now - d) / 1000;
+    if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+    if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+    if (diff < 604800) return Math.floor(diff / 86400) + '天前';
+    return d.toLocaleDateString('zh-CN');
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  /* ---- 模态框 ---- */
+  function showModal(title, bodyHtml, onClose) {
+    const container = document.getElementById('modalContainer');
+    container.innerHTML = `
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h2>${title}</h2>
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="modal-body">${bodyHtml}</div>
+        </div>
+      </div>`;
+    const overlay = document.getElementById('modalOverlay');
+    const close = () => { container.innerHTML = ''; if (onClose) onClose(); };
+    document.getElementById('modalClose').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+  }
+
+  function closeModal() {
+    document.getElementById('modalContainer').innerHTML = '';
+  }
+
+  /* ---- Tab 切换 ---- */
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(n => {
+      n.classList.toggle('active', n.dataset.tab === tab);
+    });
+    document.getElementById('fabPublish').classList.toggle('hidden', tab !== 'community');
+    if (tab === 'community') renderPosts();
+    if (tab === 'profile') renderProfile();
+  }
+
+  /* ---- 主页：板块网格 ---- */
+  function renderSections() {
+    const grid = document.getElementById('sectionGrid');
+    grid.innerHTML = SECTIONS.map(s => `
+      <div class="section-card" onclick="App.openSection('${s.id}')">
+        <div class="section-icon" style="background:${s.color}">${s.icon}</div>
+        <h3>${s.title}</h3>
+        <p>${s.description}</p>
+      </div>`).join('');
+  }
+
+  /* ---- 搜索 ---- */
+  function doSearch(keyword) {
+    const resultsEl = document.getElementById('searchResults');
+    const gridEl = document.getElementById('sectionGrid');
+    const banner = document.querySelector('.home-banner');
+    const clearBtn = document.getElementById('clearSearch');
+
+    if (!keyword.trim()) {
+      resultsEl.classList.add('hidden');
+      gridEl.classList.remove('hidden');
+      banner.classList.remove('hidden');
+      clearBtn.classList.add('hidden');
+      return;
+    }
+
+    clearBtn.classList.remove('hidden');
+    gridEl.classList.add('hidden');
+    banner.classList.add('hidden');
+    resultsEl.classList.remove('hidden');
+
+    const kw = keyword.toLowerCase();
+    const results = [];
+
+    BASIC_ARTICLES.forEach(a => {
+      const text = (a.title + a.steps.join('')).toLowerCase();
+      if (text.includes(kw)) results.push({ ...a, matchType: '基础知识', desc: a.steps[0] });
+    });
+    CCNU_INFOS.forEach(c => {
+      const text = (c.title + c.description + (c.address || '')).toLowerCase();
+      if (text.includes(kw)) results.push({ ...c, matchType: '[校内]', desc: c.description });
+    });
+    EXPERIENCES.forEach(e => {
+      const text = (e.title + e.summary).toLowerCase();
+      if (text.includes(kw)) results.push({ ...e, matchType: '[经验]', desc: e.summary });
+    });
+    state.posts.forEach(p => {
+      const text = (p.title + p.content).toLowerCase();
+      if (text.includes(kw)) results.push({ id: p.id, type: 'post', title: p.title, sectionId: p.sectionId, matchType: '帖子', desc: p.content.slice(0, 60) });
+    });
+    SECTIONS.forEach(s => {
+      if (s.title.includes(keyword) || s.description.includes(keyword)) {
+        results.push({ id: s.id, type: 'section', title: s.title, matchType: '板块', desc: s.description });
+      }
+    });
+
+    if (results.length === 0) {
+      resultsEl.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>未找到相关内容</p></div>';
+      return;
+    }
+
+    resultsEl.innerHTML = results.map(r => `
+      <div class="result-item" onclick="App.handleSearchResult('${r.type || 'article'}','${r.id}','${r.sectionId || ''}','${r.postId || ''}')">
+        <div class="result-type">${r.matchType}</div>
+        <div class="result-title">${escapeHtml(r.title)}</div>
+        <div class="result-desc">${escapeHtml(r.desc || '')}</div>
+        ${r.sectionId ? `<div class="result-desc">${SECTION_MAP[r.sectionId]?.title || ''}</div>` : ''}
+      </div>`).join('');
+  }
+
+  function handleSearchResult(type, id, sectionId, postId) {
+    if (type === 'section') { openSection(id); return; }
+    if (type === 'post') { switchTab('community'); showPostDetail(id); return; }
+    if (type === 'experience') { showPostDetail(postId); return; }
+    if (type === 'ccnu') {
+      const item = CCNU_INFOS.find(c => c.id === id);
+      if (item) showItemDetail(item);
+      return;
+    }
+    const item = BASIC_ARTICLES.find(a => a.id === id);
+    if (item) showItemDetail(item);
+  }
+
+  /* ---- 板块详情 ---- */
+  function openSection(sectionId) {
+    currentSection = sectionId;
+    currentSectionTab = 'basic';
+    document.getElementById('home-main').classList.add('hidden');
+    document.getElementById('section-detail').classList.remove('hidden');
+    document.getElementById('sectionDetailTitle').textContent = SECTION_MAP[sectionId].title;
+    renderSectionTabs();
+    renderSectionItems();
+  }
+
+  function goBackSection() {
+    currentSection = null;
+    document.getElementById('section-detail').classList.add('hidden');
+    document.getElementById('home-main').classList.remove('hidden');
+  }
+
+  function renderSectionTabs() {
+    const tabs = [
+      { key: 'basic', label: '基础知识' },
+      { key: 'ccnu', label: 'CCNU专属' },
+      { key: 'experience', label: '经验分享' }
+    ];
+    document.getElementById('sectionSubTabs').innerHTML = tabs.map(t => `
+      <div class="sub-tab ${currentSectionTab === t.key ? 'active' : ''}" onclick="App.setSectionTab('${t.key}')">${t.label}</div>
+    `).join('');
+  }
+
+  function setSectionTab(key) {
+    currentSectionTab = key;
+    renderSectionTabs();
+    renderSectionItems();
+  }
+
+  function renderSectionItems() {
+    const list = document.getElementById('sectionItemList');
+    let items = [];
+    if (currentSectionTab === 'basic') {
+      items = BASIC_ARTICLES.filter(a => a.sectionId === currentSection);
+    } else if (currentSectionTab === 'ccnu') {
+      items = CCNU_INFOS.filter(c => c.sectionId === currentSection);
+    } else {
+      items = EXPERIENCES.filter(e => e.sectionId === currentSection);
+    }
+
+    if (items.length === 0) {
+      list.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无内容</p></div>';
+      return;
+    }
+
+    list.innerHTML = items.map(item => {
+      let tag = '';
+      if (item.type === 'ccnu') tag = '<span class="tag-campus">[校内]</span>';
+      if (item.type === 'experience') tag = '<span class="tag-exp">[经验]</span>';
+
+      let desc = '';
+      if (item.steps) desc = item.steps.map((s, i) => `<div class="item-step">${i + 1}. ${escapeHtml(s)}</div>`).join('');
+      else if (item.description) desc = `<div class="item-desc">${escapeHtml(item.description)}</div>`;
+      else if (item.summary) desc = `<div class="item-desc">${escapeHtml(item.summary)}</div>`;
+
+      return `<div class="item-card" onclick="App.onItemClick('${item.type || 'article'}','${item.id}','${item.postId || ''}')">
+        <div class="item-title">${tag}${escapeHtml(item.title)}</div>${desc}
+      </div>`;
+    }).join('');
+  }
+
+  function onItemClick(type, id, postId) {
+    if (type === 'experience') { showPostDetail(postId); return; }
+    const item = type === 'ccnu'
+      ? CCNU_INFOS.find(c => c.id === id)
+      : BASIC_ARTICLES.find(a => a.id === id);
+    if (item) showItemDetail(item);
+  }
+
+  function showItemDetail(item) {
+    addHistory({ type: item.type || 'article', title: item.title, targetId: item.id, sectionId: item.sectionId });
+    let body = '';
+    if (item.steps) {
+      body = '<h3 style="margin-bottom:12px;">操作步骤</h3>' +
+        item.steps.map((s, i) => `<p><strong>${i + 1}.</strong> ${escapeHtml(s)}</p>`).join('') +
+        (item.officialUrl ? `<p style="margin-top:12px;"><a href="${item.officialUrl}" target="_blank" style="color:var(--secondary);">🔗 ${item.officialName || '官方链接'}</a></p>` : '');
+    } else {
+      body = `<p>${escapeHtml(item.description || item.content || '')}</p>`;
+      if (item.address) body += `<div class="info-row"><span class="info-label">地址</span><span>${escapeHtml(item.address)}</span></div>`;
+      if (item.time) body += `<div class="info-row"><span class="info-label">时间</span><span>${escapeHtml(item.time)}</span></div>`;
+      if (item.price) body += `<div class="info-row"><span class="info-label">价格</span><span>${escapeHtml(item.price)}</span></div>`;
+      if (item.phone) body += `<div class="info-row"><span class="info-label">电话</span><span>${escapeHtml(item.phone)}</span></div>`;
+    }
+    showModal(item.title, body);
+  }
+
+  function addHistory(entry) {
+    if (!state.settings.recordHistory) return;
+    state.browseHistory.unshift({ ...entry, id: 'h_' + Date.now(), viewedAt: new Date().toISOString() });
+    if (state.browseHistory.length > 50) state.browseHistory.length = 50;
+    saveState();
+  }
+
+  /* ---- 社群 ---- */
+  function renderTagFilter() {
+    document.getElementById('tagFilter').innerHTML = PRESET_TAGS.map(t => `
+      <div class="filter-tag ${currentTagFilter === t ? 'active' : ''}" onclick="App.setTagFilter('${t}')">${t}</div>
+    `).join('');
+  }
+
+  function setTagFilter(tag) {
+    currentTagFilter = tag;
+    renderTagFilter();
+    renderPosts();
+  }
+
+  function getVisiblePosts() {
+    return state.posts.filter(p => {
+      if (blockedPosts.has(p.id) || blockedUsers.has(p.authorId)) return false;
+      if (currentTagFilter === '全部') return true;
+      return p.tags.includes(currentTagFilter);
+    });
+  }
+
+  function renderPosts() {
+    const posts = getVisiblePosts();
+    const list = document.getElementById('postList');
+    if (posts.length === 0) {
+      list.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>暂无帖子</p></div>';
+      return;
+    }
+    list.innerHTML = posts.map(p => {
+      const liked = state.likedPosts.includes(p.id);
+      const favorited = state.favorites.posts.includes(p.id);
+      const useful = (p.usefulBy || []).includes(USER_ID);
+      return `
+      <div class="post-card" data-id="${p.id}">
+        <div class="post-header">
+          <span class="post-type ${p.type}">${POST_TYPE_LABELS[p.type]}</span>
+          <button class="post-menu" onclick="App.showPostMenu('${p.id}')"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+        <div class="post-title" onclick="App.showPostDetail('${p.id}')">
+          ${escapeHtml(p.title)}
+          ${p.resolved ? '<span class="resolved-badge">已解决</span>' : ''}
+        </div>
+        <div class="post-content" onclick="App.showPostDetail('${p.id}')">${escapeHtml(p.content)}</div>
+        <div class="post-tags">${p.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
+        <div class="post-meta">
+          <span>${escapeHtml(p.authorName)} · ${formatTime(p.createdAt)}</span>
+          <span><i class="fas fa-comment"></i> ${p.commentCount} · <i class="fas fa-heart"></i> ${p.likeCount}</span>
+        </div>
+        <div class="post-actions">
+          <button class="action-btn ${liked ? 'active' : ''}" onclick="App.toggleLike('${p.id}')"><i class="fas fa-heart"></i> ${p.likeCount}</button>
+          <button class="action-btn" onclick="App.showPostDetail('${p.id}')"><i class="fas fa-comment"></i> ${p.commentCount}</button>
+          <button class="action-btn ${favorited ? 'active' : ''}" onclick="App.toggleFavorite('${p.id}')"><i class="fas fa-star"></i> ${p.favoriteCount}</button>
+          ${p.type === 'help' ? `<button class="action-btn ${useful ? 'active' : ''}" onclick="App.toggleUseful('${p.id}')"><i class="fas fa-thumbs-up"></i> 有用 ${p.usefulCount || 0}</button>` : ''}
+          ${p.type === 'help' && !p.resolved ? `<button class="action-btn" onclick="App.markResolved('${p.id}')"><i class="fas fa-check"></i> 已解决</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleLike(postId) {
+    const post = state.posts.find(p => p.id === postId);
+    if (!post) return;
+    const idx = state.likedPosts.indexOf(postId);
+    if (idx >= 0) { state.likedPosts.splice(idx, 1); post.likeCount--; toast('已取消点赞'); }
+    else { state.likedPosts.push(postId); post.likeCount++; toast('点赞成功'); }
+    saveState();
+    renderPosts();
+  }
+
+  function toggleFavorite(postId) {
+    const post = state.posts.find(p => p.id === postId);
+    if (!post) return;
+    const idx = state.favorites.posts.indexOf(postId);
+    if (idx >= 0) { state.favorites.posts.splice(idx, 1); post.favoriteCount--; toast('已取消收藏'); }
+    else { state.favorites.posts.push(postId); post.favoriteCount++; toast('收藏成功'); }
+    saveState();
+    renderPosts();
+  }
+
+  function toggleUseful(postId) {
+    const post = state.posts.find(p => p.id === postId);
+    if (!post) return;
+    if (!post.usefulBy) post.usefulBy = [];
+    const idx = post.usefulBy.indexOf(USER_ID);
+    if (idx >= 0) { post.usefulBy.splice(idx, 1); post.usefulCount--; toast('已取消标记'); }
+    else { post.usefulBy.push(USER_ID); post.usefulCount++; toast('已标记为有用'); }
+    saveState();
+    renderPosts();
+  }
+
+  function markResolved(postId) {
+    const post = state.posts.find(p => p.id === postId);
+    if (post) { post.resolved = true; toast('已标记为已解决'); saveState(); renderPosts(); }
+  }
+
+  function showPostMenu(postId) {
+    const post = state.posts.find(p => p.id === postId);
+    if (!post) return;
+    showModal('帖子管理', `
+      <button class="btn-primary" style="margin-bottom:8px;" onclick="App.reportPost('${postId}')">举报帖子</button>
+      <button class="btn-secondary" onclick="App.blockUser('${post.authorId}','${escapeHtml(post.authorName)}')">屏蔽用户 ${escapeHtml(post.authorName)}</button>
+    `);
+  }
+
+  function reportPost(postId) {
+    closeModal();
+    const reasons = REPORT_REASONS.map(r =>
+      `<button class="btn-secondary" style="margin-bottom:6px;" onclick="App.submitReport('${postId}','${r}')">${r}</button>`
+    ).join('');
+    showModal('举报原因', reasons);
+  }
+
+  function submitReport(postId, reason) {
+    closeModal();
+    toast('举报已提交，感谢反馈');
+  }
+
+  function blockUser(userId, name) {
+    closeModal();
+    blockedUsers.add(userId);
+    saveState();
+    renderPosts();
+    toast('已屏蔽用户：' + name);
+  }
+
+  function showPostDetail(postId) {
+    const post = state.posts.find(p => p.id === postId);
+    if (!post) return;
+    addHistory({ type: 'post', title: post.title, targetId: postId, sectionId: post.sectionId });
+    const postComments = state.comments.filter(c => c.postId === postId);
+    const commentsHtml = postComments.length
+      ? postComments.map(c => `
+        <div class="comment-item">
+          <span class="comment-author">${escapeHtml(c.authorName)}</span>
+          ${c.replyToName ? `<span class="comment-reply">回复 ${escapeHtml(c.replyToName)}</span>` : ''}
+          <div class="comment-text">${escapeHtml(c.content)}</div>
+          <div class="comment-time">${formatTime(c.createdAt)}</div>
+        </div>`).join('')
+      : '<p style="color:var(--text-secondary);font-size:0.85rem;">暂无评论</p>';
+
+    showModal(post.title, `
+      <div style="margin-bottom:12px;">
+        <span class="post-type ${post.type}">${POST_TYPE_LABELS[post.type]}</span>
+        ${post.resolved ? '<span class="resolved-badge">已解决</span>' : ''}
+      </div>
+      <p style="line-height:1.7;margin-bottom:12px;">${escapeHtml(post.content)}</p>
+      <div class="post-tags" style="margin-bottom:12px;">${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
+      <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:16px;">${escapeHtml(post.authorName)} · ${formatTime(post.createdAt)}</p>
+      <h3 style="margin-bottom:8px;font-size:0.95rem;">评论 (${postComments.length})</h3>
+      ${commentsHtml}
+      <div class="comment-input-row">
+        <input type="text" id="commentInput" placeholder="写下你的评论…">
+        <button onclick="App.submitComment('${postId}')">发送</button>
+      </div>
+    `);
+  }
+
+  function submitComment(postId) {
+    const input = document.getElementById('commentInput');
+    const content = input?.value?.trim();
+    if (!content) { toast('请输入评论内容'); return; }
+    state.comments.push({
+      id: 'c_' + Date.now(), postId, authorId: USER_ID, authorName: state.nickname,
+      content, createdAt: new Date().toISOString()
+    });
+    const post = state.posts.find(p => p.id === postId);
+    if (post) post.commentCount++;
+    saveState();
+    toast('评论成功');
+    closeModal();
+    showPostDetail(postId);
+  }
+
+  /* ---- 发布帖子 ---- */
+  function showPublishForm(draft) {
+    const d = draft || { type: 'help', title: '', content: '', tags: [], images: [] };
+    showModal('发布帖子', `
+      <div class="form-group">
+        <label>发布类型</label>
+        <select id="pubType">
+          <option value="help" ${d.type === 'help' ? 'selected' : ''}>求助</option>
+          <option value="share" ${d.type === 'share' ? 'selected' : ''}>分享</option>
+          <option value="trade" ${d.type === 'trade' ? 'selected' : ''}>交易</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>标题</label>
+        <input type="text" id="pubTitle" value="${escapeHtml(d.title)}" placeholder="输入标题">
+      </div>
+      <div class="form-group">
+        <label>内容</label>
+        <textarea id="pubContent" placeholder="详细描述…">${escapeHtml(d.content)}</textarea>
+      </div>
+      <div class="form-group">
+        <label>图片（可选）</label>
+        <input type="file" id="pubImage" accept="image/*" multiple onchange="App.previewImages(this)">
+        <div class="img-preview" id="imgPreview"></div>
+      </div>
+      <div class="form-group">
+        <label>标签选择</label>
+        <div class="tag-select" id="pubTags">${PRESET_TAGS.filter(t => t !== '全部').map(t =>
+          `<span class="tag-option ${d.tags.includes(t) ? 'selected' : ''}" data-tag="${t}" onclick="this.classList.toggle('selected')">${t}</span>`
+        ).join('')}</div>
+      </div>
+      <button class="btn-primary" onclick="App.submitPost()">发布</button>
+      <button class="btn-secondary" onclick="App.saveDraft()">存为草稿</button>
+    `);
+  }
+
+  function previewImages(input) {
+    const preview = document.getElementById('imgPreview');
+    preview.innerHTML = '';
+    [...input.files].forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML += `<img src="${e.target.result}" alt="preview">`;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function submitPost() {
+    const type = document.getElementById('pubType').value;
+    const title = document.getElementById('pubTitle').value.trim();
+    const content = document.getElementById('pubContent').value.trim();
+    const tags = [...document.querySelectorAll('#pubTags .tag-option.selected')].map(el => el.dataset.tag);
+    if (!title || !content) { toast('请填写标题和内容'); return; }
+    if (tags.length === 0) { toast('请至少选择一个标签'); return; }
+
+    const newPost = {
+      id: 'post_' + Date.now(), type, sectionId: 'life', title, content,
+      images: [], tags, authorId: USER_ID, authorName: state.nickname,
+      createdAt: new Date().toISOString(),
+      likeCount: 0, commentCount: 0, favoriteCount: 0, usefulCount: 0,
+      resolved: false, usefulBy: []
+    };
+    state.posts.unshift(newPost);
+    state.myPosts.unshift(newPost.id);
+    saveState();
+    closeModal();
+    toast('发布成功！');
+    renderPosts();
+  }
+
+  function saveDraft() {
+    const draft = {
+      id: 'draft_' + Date.now(),
+      type: document.getElementById('pubType').value,
+      title: document.getElementById('pubTitle').value.trim(),
+      content: document.getElementById('pubContent').value.trim(),
+      tags: [...document.querySelectorAll('#pubTags .tag-option.selected')].map(el => el.dataset.tag),
+      images: [], savedAt: new Date().toISOString()
+    };
+    state.drafts.push(draft);
+    saveState();
+    closeModal();
+    toast('已保存到草稿箱');
+  }
+
+  /* ---- 我的页面 ---- */
+  function renderProfile() {
+    document.getElementById('profileNickname').textContent = state.nickname;
+    document.getElementById('profileId').textContent = 'ID: ' + USER_ID;
+    const unread = state.notifications.filter(n => !n.read).length;
+    document.getElementById('profileMenu').innerHTML = `
+      <div class="menu-group">
+        <div class="menu-item" onclick="App.openProfileSub('myQuestions')"><i class="fas fa-question-circle"></i><span>我的提问</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+        <div class="menu-item" onclick="App.openProfileSub('favorites')"><i class="fas fa-star"></i><span>我的收藏</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+        <div class="menu-item" onclick="App.openProfileSub('history')"><i class="fas fa-clock"></i><span>浏览历史</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+        <div class="menu-item" onclick="App.openProfileSub('likesComments')"><i class="fas fa-heart"></i><span>点赞/评论记录</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+        <div class="menu-item" onclick="App.openProfileSub('follow')"><i class="fas fa-user-plus"></i><span>关注管理</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+        <div class="menu-item" onclick="App.openProfileSub('notifications')"><i class="fas fa-bell"></i><span>系统通知</span>${unread ? `<span class="menu-badge">${unread}</span>` : ''}<span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+      </div>
+      <div class="menu-group">
+        <div class="menu-item" onclick="App.openProfileSub('settings')"><i class="fas fa-cog"></i><span>设置管理</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+      </div>`;
+  }
+
+  function editNickname() {
+    const name = prompt('修改昵称', state.nickname);
+    if (name && name.trim()) {
+      state.nickname = name.trim();
+      saveState();
+      renderProfile();
+      toast('昵称已更新');
+    }
+  }
+
+  function openProfileSub(page) {
+    profileSubPage = page;
+    document.getElementById('profile-main').classList.add('hidden');
+    const sub = document.getElementById('profile-sub');
+    sub.classList.remove('hidden');
+    const titles = {
+      myQuestions: '我的提问', favorites: '我的收藏', history: '浏览历史',
+      likesComments: '点赞/评论记录', follow: '关注管理', notifications: '系统通知',
+      settings: '设置管理', accountSecurity: '账号安全', generalSettings: '通用设置',
+      privacySettings: '隐私设置', helpFeedback: '帮助与反馈', about: '关于我们',
+      drafts: '草稿箱', posts: '发帖记录', collectedQuestions: '收藏问题'
+    };
+    sub.innerHTML = `<div class="page-header">
+      <button class="back-btn" onclick="App.backProfile()"><i class="fas fa-arrow-left"></i></button>
+      <h1>${titles[page] || page}</h1>
+    </div><div id="subContent"></div>`;
+    renderSubContent(page);
+  }
+
+  function backProfile() {
+    if (['accountSecurity', 'generalSettings', 'privacySettings', 'helpFeedback', 'about'].includes(profileSubPage)) {
+      openProfileSub('settings');
+      return;
+    }
+    if (['drafts', 'posts', 'collectedQuestions'].includes(profileSubPage)) {
+      openProfileSub('myQuestions');
+      return;
+    }
+    profileSubPage = null;
+    document.getElementById('profile-sub').classList.add('hidden');
+    document.getElementById('profile-main').classList.remove('hidden');
+    renderProfile();
+  }
+
+  function renderSubContent(page) {
+    const el = document.getElementById('subContent');
+    switch (page) {
+      case 'myQuestions':
+        el.innerHTML = `
+          <div class="menu-group" style="margin:12px 16px;">
+            <div class="menu-item" onclick="App.openProfileSub('posts')"><i class="fas fa-edit"></i><span>发帖记录</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.openProfileSub('collectedQuestions')"><i class="fas fa-bookmark"></i><span>收藏问题</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.openProfileSub('drafts')"><i class="fas fa-file-alt"></i><span>草稿箱 (${state.drafts.length})</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+          </div>
+          <div style="padding:0 16px;color:var(--text-secondary);font-size:0.85rem;">历史答疑：你发布或参与的求助帖会显示在发帖记录中。</div>`;
+        break;
+      case 'posts':
+        profileSubPage = 'posts';
+        const myPostIds = [...new Set([...state.myPosts, ...state.posts.filter(p => p.authorId === USER_ID).map(p => p.id)])];
+        const myPosts = state.posts.filter(p => myPostIds.includes(p.id));
+        el.innerHTML = myPosts.length ? myPosts.map(p => `
+          <div class="list-entry" onclick="App.showPostDetail('${p.id}')">
+            <div class="list-entry-title">${escapeHtml(p.title)}</div>
+            <div class="list-entry-desc">${POST_TYPE_LABELS[p.type]} · ${formatTime(p.createdAt)}</div>
+          </div>`).join('') : '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无发帖记录</p></div>';
+        break;
+      case 'collectedQuestions':
+        profileSubPage = 'collectedQuestions';
+        const helpFavs = state.favorites.posts.map(id => state.posts.find(p => p.id === id)).filter(p => p && p.type === 'help');
+        el.innerHTML = helpFavs.length ? helpFavs.map(p => `
+          <div class="list-entry" onclick="App.showPostDetail('${p.id}')">
+            <div class="list-entry-title">${escapeHtml(p.title)}</div>
+            <div class="list-entry-desc">${formatTime(p.createdAt)}</div>
+          </div>`).join('') : '<div class="empty-state"><i class="fas fa-bookmark"></i><p>暂无收藏问题</p></div>';
+        break;
+      case 'drafts':
+        profileSubPage = 'drafts';
+        el.innerHTML = state.drafts.length ? state.drafts.map((d, i) => `
+          <div class="list-entry" onclick="App.editDraft(${i})">
+            <div class="list-entry-title">${escapeHtml(d.title || '无标题草稿')}</div>
+            <div class="list-entry-desc">${formatTime(d.savedAt)}</div>
+          </div>`).join('') : '<div class="empty-state"><i class="fas fa-file-alt"></i><p>草稿箱为空</p></div>';
+        break;
+      case 'favorites':
+        const favPosts = state.favorites.posts.map(id => state.posts.find(p => p.id === id)).filter(Boolean);
+        el.innerHTML = favPosts.length ? favPosts.map(p => `
+          <div class="list-entry" onclick="App.showPostDetail('${p.id}')">
+            <div class="list-entry-title">${escapeHtml(p.title)} <span class="post-tag">经验帖</span></div>
+            <div class="list-entry-desc">${formatTime(p.createdAt)}</div>
+          </div>`).join('') : '<div class="empty-state"><i class="fas fa-star"></i><p>暂无收藏</p></div>';
+        break;
+      case 'history':
+        el.innerHTML = state.browseHistory.length ? state.browseHistory.map(h => `
+          <div class="list-entry">
+            <div class="list-entry-title">${escapeHtml(h.title)}</div>
+            <div class="list-entry-desc">${h.type} · ${formatTime(h.viewedAt)}</div>
+          </div>`).join('') : '<div class="empty-state"><i class="fas fa-clock"></i><p>暂无浏览历史</p></div>';
+        break;
+      case 'likesComments':
+        const liked = state.likedPosts.map(id => state.posts.find(p => p.id === id)).filter(Boolean);
+        const myComments = state.comments.filter(c => c.authorId === USER_ID);
+        el.innerHTML = `
+          <h3 style="padding:12px 16px 4px;font-size:0.9rem;">点赞记录</h3>
+          ${liked.length ? liked.map(p => `<div class="list-entry" onclick="App.showPostDetail('${p.id}')"><div class="list-entry-title">${escapeHtml(p.title)}</div></div>`).join('') : '<div class="empty-state" style="padding:16px;"><p>暂无点赞</p></div>'}
+          <h3 style="padding:12px 16px 4px;font-size:0.9rem;">评论记录</h3>
+          ${myComments.length ? myComments.map(c => `<div class="list-entry"><div class="list-entry-title">${escapeHtml(c.content)}</div><div class="list-entry-desc">${formatTime(c.createdAt)}</div></div>`).join('') : '<div class="empty-state" style="padding:16px;"><p>暂无评论</p></div>'}`;
+        break;
+      case 'follow':
+        el.innerHTML = FOLLOW_LIST.map(f => `
+          <div class="setting-item">
+            <div><div style="font-weight:600;">${f.name}</div><div style="font-size:0.8rem;color:var(--text-secondary);">${f.desc}</div></div>
+            <button class="toggle ${state.followList.includes(f.id) ? 'on' : ''}" onclick="App.toggleFollow('${f.id}',this)"></button>
+          </div>`).join('');
+        break;
+      case 'notifications':
+        el.innerHTML = state.notifications.map(n => `
+          <div class="list-entry" style="${n.read ? 'opacity:0.6' : ''}" onclick="App.readNotification('${n.id}')">
+            <div class="list-entry-title">${escapeHtml(n.title)} ${n.read ? '' : '<span class="menu-badge">新</span>'}</div>
+            <div class="list-entry-desc">${escapeHtml(n.content)}</div>
+          </div>`).join('');
+        break;
+      case 'settings':
+        el.innerHTML = `
+          <div class="menu-group" style="margin:12px 16px;">
+            <div class="menu-item" onclick="App.openProfileSub('accountSecurity')"><i class="fas fa-lock"></i><span>账号安全</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.openProfileSub('generalSettings')"><i class="fas fa-sliders-h"></i><span>通用设置</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.openProfileSub('privacySettings')"><i class="fas fa-user-shield"></i><span>隐私设置</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.openProfileSub('helpFeedback')"><i class="fas fa-life-ring"></i><span>帮助与反馈</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.openProfileSub('about')"><i class="fas fa-info-circle"></i><span>关于我们</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+          </div>`;
+        break;
+      case 'accountSecurity':
+        profileSubPage = 'accountSecurity';
+        el.innerHTML = `
+          <div class="menu-group" style="margin:12px 16px;">
+            <div class="menu-item" onclick="App.changePassword()"><i class="fas fa-key"></i><span>修改密码</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.bindPhone()"><i class="fas fa-mobile-alt"></i><span>绑定手机</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.logout()" style="color:#DC2626;"><i class="fas fa-sign-out-alt" style="color:#DC2626;"></i><span>退出登录</span></div>
+          </div>`;
+        break;
+      case 'generalSettings':
+        profileSubPage = 'generalSettings';
+        el.innerHTML = `
+          <div class="setting-item"><span>消息推送</span><button class="toggle ${state.settings.pushEnabled ? 'on' : ''}" onclick="App.toggleSetting('pushEnabled',this)"></button></div>
+          <div class="setting-item"><span>深色模式</span><button class="toggle ${state.settings.darkMode ? 'on' : ''}" onclick="App.toggleSetting('darkMode',this)"></button></div>
+          <div class="setting-item"><span>字体大小</span>
+            <select class="setting-select" onchange="App.setFontSize(this.value)">
+              <option value="small" ${state.settings.fontSize === 'small' ? 'selected' : ''}>小</option>
+              <option value="medium" ${state.settings.fontSize === 'medium' ? 'selected' : ''}>中</option>
+              <option value="large" ${state.settings.fontSize === 'large' ? 'selected' : ''}>大</option>
+            </select>
+          </div>`;
+        break;
+      case 'privacySettings':
+        profileSubPage = 'privacySettings';
+        el.innerHTML = `
+          <div class="setting-item"><span>记录浏览历史</span><button class="toggle ${state.settings.recordHistory ? 'on' : ''}" onclick="App.toggleSetting('recordHistory',this)"></button></div>
+          <div class="setting-item"><span>评论权限</span>
+            <select class="setting-select" onchange="App.setPrivacy('commentPermission',this.value)">
+              <option value="all" ${state.settings.commentPermission === 'all' ? 'selected' : ''}>所有人</option>
+              <option value="friends" ${state.settings.commentPermission === 'friends' ? 'selected' : ''}>仅好友</option>
+              <option value="self" ${state.settings.commentPermission === 'self' ? 'selected' : ''}>仅自己</option>
+            </select>
+          </div>
+          <div class="setting-item"><span>个人主页可见范围</span>
+            <select class="setting-select" onchange="App.setPrivacy('profileVisibility',this.value)">
+              <option value="all" ${state.settings.profileVisibility === 'all' ? 'selected' : ''}>公开</option>
+              <option value="friends" ${state.settings.profileVisibility === 'friends' ? 'selected' : ''}>仅好友</option>
+              <option value="self" ${state.settings.profileVisibility === 'self' ? 'selected' : ''}>仅自己</option>
+            </select>
+          </div>`;
+        break;
+      case 'helpFeedback':
+        profileSubPage = 'helpFeedback';
+        el.innerHTML = `
+          <div class="menu-group" style="margin:12px 16px;">
+            <div class="menu-item" onclick="App.contactSupport()"><i class="fas fa-headset"></i><span>客服咨询</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.reportIssue()"><i class="fas fa-bug"></i><span>问题上报</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+          </div>
+          <h3 style="padding:12px 16px 4px;">常见 FAQ</h3>
+          ${FAQ.map(f => `<div class="faq-item"><div class="faq-q">${f.q}</div><div class="faq-a">${f.a}</div></div>`).join('')}`;
+        break;
+      case 'about':
+        profileSubPage = 'about';
+        el.innerHTML = `
+          <div class="about-info">
+            <div class="about-logo">🐷</div>
+            <h2>猪猪妈妈</h2>
+            <p class="about-version">版本 1.0.0</p>
+            <p style="color:var(--text-secondary);margin-top:8px;font-size:0.85rem;">华中师范大学生活指南</p>
+          </div>
+          <div class="menu-group" style="margin:12px 16px;">
+            <div class="menu-item" onclick="App.showAgreement()"><i class="fas fa-file-contract"></i><span>用户协议</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            <div class="menu-item" onclick="App.showPrivacy()"><i class="fas fa-shield-alt"></i><span>隐私政策</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+          </div>`;
+        break;
+    }
+  }
+
+  function editDraft(index) {
+    showPublishForm(state.drafts[index]);
+    state.drafts.splice(index, 1);
+    saveState();
+  }
+
+  function toggleFollow(userId, btn) {
+    const idx = state.followList.indexOf(userId);
+    if (idx >= 0) { state.followList.splice(idx, 1); btn.classList.remove('on'); toast('已取消关注'); }
+    else { state.followList.push(userId); btn.classList.add('on'); toast('关注成功'); }
+    saveState();
+  }
+
+  function readNotification(id) {
+    const n = state.notifications.find(n => n.id === id);
+    if (n) { n.read = true; saveState(); renderProfile(); renderSubContent('notifications'); }
+  }
+
+  function toggleSetting(key, btn) {
+    state.settings[key] = !state.settings[key];
+    btn.classList.toggle('on', state.settings[key]);
+    saveState();
+    if (key === 'darkMode') toast(state.settings.darkMode ? '已开启深色模式' : '已关闭深色模式');
+  }
+
+  function setFontSize(size) {
+    state.settings.fontSize = size;
+    saveState();
+    toast('字体大小已更新');
+  }
+
+  function setPrivacy(key, value) {
+    state.settings[key] = value;
+    saveState();
+    toast('设置已保存');
+  }
+
+  function changePassword() {
+    const pwd = prompt('请输入新密码（演示）');
+    if (pwd) toast('密码修改成功');
+  }
+
+  function bindPhone() {
+    const phone = prompt('请输入手机号');
+    if (phone) toast('手机绑定成功：' + phone);
+  }
+
+  function logout() {
+    if (confirm('确定退出登录？')) toast('已退出登录（演示）');
+  }
+
+  function contactSupport() {
+    showModal('客服咨询', '<p>请发送邮件至 <strong>support@pigmom.ccnu.edu.cn</strong></p><p style="margin-top:8px;color:var(--text-secondary);font-size:0.85rem;">工作时间：周一至周五 9:00-17:00</p>');
+  }
+
+  function reportIssue() {
+    const issue = prompt('请描述您遇到的问题');
+    if (issue) toast('问题已上报，感谢反馈');
+  }
+
+  function showAgreement() {
+    showModal('用户协议', `<div class="text-content">${escapeHtml(USER_AGREEMENT)}</div>`);
+  }
+
+  function showPrivacy() {
+    showModal('隐私政策', `<div class="text-content">${escapeHtml(PRIVACY_POLICY)}</div>`);
+  }
+
+  /* ---- 初始化 ---- */
+  function init() {
+    applyTheme();
+    renderSections();
+    renderTagFilter();
+    renderPosts();
+    renderProfile();
+
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', (e) => doSearch(e.target.value));
+    document.getElementById('clearSearch').addEventListener('click', () => {
+      searchInput.value = '';
+      doSearch('');
+    });
+
+    document.getElementById('fabPublish').addEventListener('click', () => showPublishForm());
+
+    // 长按帖子举报
+    document.getElementById('postList').addEventListener('contextmenu', (e) => {
+      const card = e.target.closest('.post-card');
+      if (card) { e.preventDefault(); showPostMenu(card.dataset.id); }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  return {
+    openSection, goBackSection, setSectionTab, onItemClick, handleSearchResult,
+    setTagFilter, showPostDetail, toggleLike, toggleFavorite, toggleUseful,
+    markResolved, showPostMenu, reportPost, submitReport, blockUser, submitComment,
+    showPublishForm, previewImages, submitPost, saveDraft,
+    openProfileSub, backProfile, editNickname, editDraft, toggleFollow,
+    readNotification, toggleSetting, setFontSize, setPrivacy,
+    changePassword, bindPhone, logout, contactSupport, reportIssue,
+    showAgreement, showPrivacy
+  };
+})();
+</script>
+</body>
+</html>
+

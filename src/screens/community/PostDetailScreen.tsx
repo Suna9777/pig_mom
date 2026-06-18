@@ -1,0 +1,232 @@
+import React, { useState, useLayoutEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { CommunityStackParamList, HomeStackParamList, ProfileStackParamList } from '../../types';
+import { ImageGrid } from '../../components/ImageViewer';
+import { ReportModal } from '../../components/ReportModal';
+import { useApp, useTheme } from '../../context/AppContext';
+import { formatRelativeTime } from '../../utils/helpers';
+import { POST_TYPE_LABELS } from '../../constants/tags';
+import { SECTION_MAP } from '../../constants/sections';
+import { showFeedback, showToast } from '../../utils/feedback';
+import { COLORS } from '../../constants/theme';
+
+type NavProp = NativeStackNavigationProp<
+  CommunityStackParamList & HomeStackParamList & ProfileStackParamList,
+  'PostDetail'
+>;
+type RoutePropType = RouteProp<
+  CommunityStackParamList & HomeStackParamList & ProfileStackParamList,
+  'PostDetail'
+>;
+
+/** 帖子详情页 */
+export function PostDetailScreen({ navigation, route }: { navigation: NavProp; route: RoutePropType }) {
+  const { postId } = route.params;
+  const { colors, fonts } = useTheme();
+  const {
+    getPostById,
+    getCommentsByPost,
+    addComment,
+    toggleLike,
+    toggleFavorite,
+    toggleUseful,
+    toggleResolved,
+    blockUser,
+    reportContent,
+    state,
+  } = useApp();
+  const post = getPostById(postId);
+  const comments = getCommentsByPost(postId);
+  const [commentText, setCommentText] = useState('');
+  const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
+  const [reportVisible, setReportVisible] = useState(false);
+  const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'comment'; id: string } | null>(null);
+
+  const isLiked = state.likes.includes(postId);
+  const isFavorited = state.favorites.includes(postId);
+  const isUseful = state.usefulMarks.includes(postId);
+  const isAuthor = post?.authorId === state.user.id;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            setReportTarget({ type: 'post', id: postId });
+            setReportVisible(true);
+          }}
+        >
+          <Ionicons name="flag-outline" size={22} color={colors.textSecondary} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, postId, colors]);
+
+  if (!post) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: colors.textSecondary }}>帖子不存在</Text>
+      </View>
+    );
+  }
+
+  const handleComment = async () => {
+    if (!commentText.trim()) return;
+    await addComment(
+      postId,
+      commentText.trim(),
+      replyTo ? { id: replyTo.id, postId, authorId: '', authorName: replyTo.name, content: '', createdAt: '' } : undefined
+    );
+    setCommentText('');
+    setReplyTo(null);
+    showToast('评论成功');
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={[styles.card, { backgroundColor: colors.card }]}>
+          <View style={styles.badges}>
+            <Text style={[styles.badge, { backgroundColor: COLORS[post.type === 'help' ? 'help' : post.type === 'share' ? 'share' : 'trade'] + '33', color: COLORS[post.type === 'help' ? 'help' : post.type === 'share' ? 'share' : 'trade'], fontSize: fonts.xs }]}>
+              {POST_TYPE_LABELS[post.type]}
+            </Text>
+            {post.resolved && (
+              <Text style={[styles.badge, { backgroundColor: COLORS.success + '33', color: COLORS.success, fontSize: fonts.xs }]}>已解决</Text>
+            )}
+          </View>
+          <Text style={{ color: colors.text, fontSize: fonts.xl, fontWeight: '700' }}>{post.title}</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: fonts.sm, marginVertical: 8 }}>
+            {post.authorName} · {formatRelativeTime(post.createdAt)} · {SECTION_MAP[post.sectionId]?.title}
+          </Text>
+          <Text style={{ color: colors.text, fontSize: fonts.md, lineHeight: 24 }}>{post.content}</Text>
+          <ImageGrid images={post.images} />
+          <View style={styles.tags}>
+            {post.tags.map((t) => (
+              <Text key={t} style={{ color: colors.primary, fontSize: fonts.sm }}>#{t} </Text>
+            ))}
+          </View>
+        </View>
+
+        {/* 互动按钮 */}
+        <View style={[styles.actions, { backgroundColor: colors.card }]}>
+          <ActionBtn icon="heart" label={`${post.likeCount}`} active={isLiked} onPress={() => { toggleLike(postId); showFeedback(isLiked ? '已取消点赞' : '点赞成功'); }} color={colors.primary} />
+          <ActionBtn icon="star" label={`${post.favoriteCount}`} active={isFavorited} onPress={() => { toggleFavorite(postId); showFeedback(isFavorited ? '已取消收藏' : '收藏成功'); }} color={colors.primary} />
+          {post.type === 'help' && (
+            <ActionBtn icon="checkmark-circle" label={`有用 ${post.usefulCount}`} active={isUseful} onPress={() => { toggleUseful(postId); showFeedback('已标记有用'); }} color={COLORS.success} />
+          )}
+          {post.type === 'help' && isAuthor && (
+            <ActionBtn
+              icon="checkmark-done"
+              label={post.resolved ? '取消解决' : '标记已解决'}
+              active={post.resolved}
+              onPress={() => { toggleResolved(postId); showToast(post.resolved ? '已取消' : '已标记为已解决'); }}
+              color={COLORS.secondary}
+            />
+          )}
+          <TouchableOpacity onPress={() => { blockUser(post.authorId); showToast('已屏蔽该用户'); }}>
+            <Ionicons name="ban" size={22} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* 评论列表 */}
+        <Text style={{ color: colors.text, fontSize: fonts.lg, fontWeight: '600', margin: 16 }}>
+          评论 ({comments.length})
+        </Text>
+        {comments.map((c) => (
+          <View key={c.id} style={[styles.comment, { backgroundColor: colors.card }]}>
+            <Text style={{ color: colors.text, fontSize: fonts.sm, fontWeight: '600' }}>{c.authorName}</Text>
+            {c.replyToName && (
+              <Text style={{ color: colors.textSecondary, fontSize: fonts.xs }}>回复 @{c.replyToName}</Text>
+            )}
+            <Text style={{ color: colors.text, fontSize: fonts.sm, marginTop: 4 }}>{c.content}</Text>
+            <View style={styles.commentActions}>
+              <TouchableOpacity onPress={() => setReplyTo({ id: c.id, name: c.authorName })}>
+                <Text style={{ color: colors.primary, fontSize: fonts.xs }}>回复</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setReportTarget({ type: 'comment', id: c.id });
+                  setReportVisible(true);
+                }}
+              >
+                <Text style={{ color: colors.textSecondary, fontSize: fonts.xs }}>举报</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* 评论输入 */}
+      <View style={[styles.inputBar, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        {replyTo && (
+          <Text style={{ color: colors.textSecondary, fontSize: fonts.xs, marginBottom: 4 }}>
+            回复 @{replyTo.name}
+            <Text onPress={() => setReplyTo(null)} style={{ color: colors.primary }}> 取消</Text>
+          </Text>
+        )}
+        <View style={styles.inputRow}>
+          <TextInput
+            style={[styles.input, { color: colors.text, fontSize: fonts.md, borderColor: colors.border }]}
+            placeholder="写评论..."
+            placeholderTextColor={colors.textSecondary}
+            value={commentText}
+            onChangeText={setCommentText}
+          />
+          <TouchableOpacity onPress={handleComment} style={[styles.sendBtn, { backgroundColor: colors.primary }]}>
+            <Ionicons name="send" size={18} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ReportModal
+        visible={reportVisible}
+        onClose={() => setReportVisible(false)}
+        onReport={(reason) => {
+          if (reportTarget) reportContent(reportTarget.type, reportTarget.id, reason);
+        }}
+      />
+    </KeyboardAvoidingView>
+  );
+}
+
+function ActionBtn({ icon, label, active, onPress, color }: { icon: keyof typeof Ionicons.glyphMap; label: string; active: boolean; onPress: () => void; color: string }) {
+  const outlineIcon = `${icon}-outline` as keyof typeof Ionicons.glyphMap;
+  return (
+    <TouchableOpacity style={styles.actionBtn} onPress={onPress}>
+      <Ionicons name={active ? icon : outlineIcon} size={22} color={active ? color : '#999'} />
+      <Text style={{ color: active ? color : '#999', fontSize: 12 }}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  scroll: { paddingBottom: 20 },
+  card: { margin: 16, padding: 16, borderRadius: 12 },
+  badges: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  badge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, overflow: 'hidden' },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
+  actions: { flexDirection: 'row', justifyContent: 'space-around', padding: 12, marginHorizontal: 16, borderRadius: 10 },
+  actionBtn: { alignItems: 'center', gap: 2 },
+  comment: { marginHorizontal: 16, marginBottom: 8, padding: 12, borderRadius: 8 },
+  commentActions: { flexDirection: 'row', gap: 16, marginTop: 8 },
+  inputBar: { padding: 12, borderTopWidth: 1 },
+  inputRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  input: { flex: 1, borderWidth: 1, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8 },
+  sendBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+});
