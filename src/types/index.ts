@@ -70,7 +70,6 @@ export interface Post {
   commentCount: number;
   favoriteCount: number;
   usefulCount: number;
-  resolved: boolean;
   likedBy: string[];
   favoritedBy: string[];
   usefulBy: string[];

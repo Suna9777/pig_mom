@@ -42,7 +42,6 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
     toggleLike,
     toggleFavorite,
     toggleUseful,
-    toggleResolved,
     blockUser,
     reportContent,
     state,
@@ -57,7 +56,6 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
   const isLiked = state.likes.includes(postId);
   const isFavorited = state.favorites.includes(postId);
   const isUseful = state.usefulMarks.includes(postId);
-  const isAuthor = post?.authorId === state.user.id;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -105,9 +103,6 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
             <Text style={[styles.badge, { backgroundColor: COLORS[post.type === 'help' ? 'help' : post.type === 'share' ? 'share' : 'trade'] + '33', color: COLORS[post.type === 'help' ? 'help' : post.type === 'share' ? 'share' : 'trade'], fontSize: fonts.xs }]}>
               {POST_TYPE_LABELS[post.type]}
             </Text>
-            {post.resolved && (
-              <Text style={[styles.badge, { backgroundColor: COLORS.success + '33', color: COLORS.success, fontSize: fonts.xs }]}>已解决</Text>
-            )}
           </View>
           <Text style={{ color: colors.text, fontSize: fonts.xl, fontWeight: '700' }}>{post.title}</Text>
           <Text style={{ color: colors.textSecondary, fontSize: fonts.sm, marginVertical: 8 }}>
@@ -128,15 +123,6 @@ export function PostDetailScreen({ navigation, route }: { navigation: NavProp; r
           <ActionBtn icon="star" label={`${post.favoriteCount}`} active={isFavorited} onPress={() => { toggleFavorite(postId); showFeedback(isFavorited ? '已取消收藏' : '收藏成功'); }} color={colors.primary} />
           {post.type === 'help' && (
             <ActionBtn icon="checkmark-circle" label={`有用 ${post.usefulCount}`} active={isUseful} onPress={() => { toggleUseful(postId); showFeedback('已标记有用'); }} color={COLORS.success} />
-          )}
-          {post.type === 'help' && isAuthor && (
-            <ActionBtn
-              icon="checkmark-done"
-              label={post.resolved ? '取消解决' : '标记已解决'}
-              active={post.resolved}
-              onPress={() => { toggleResolved(postId); showToast(post.resolved ? '已取消' : '已标记为已解决'); }}
-              color={COLORS.secondary}
-            />
           )}
           <TouchableOpacity onPress={() => { blockUser(post.authorId); showToast('已屏蔽该用户'); }}>
             <Ionicons name="ban" size={22} color={colors.textSecondary} />

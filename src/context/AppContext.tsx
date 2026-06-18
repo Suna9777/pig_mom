@@ -187,7 +187,6 @@ interface AppContextValue {
   toggleLike: (postId: string) => Promise<void>;
   toggleFavorite: (postId: string) => Promise<void>;
   toggleUseful: (postId: string) => Promise<void>;
-  toggleResolved: (postId: string) => Promise<void>;
   // 评论
   getCommentsByPost: (postId: string) => Comment[];
   addComment: (postId: string, content: string, replyTo?: Comment) => Promise<void>;
@@ -334,7 +333,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         commentCount: 0,
         favoriteCount: 0,
         usefulCount: 0,
-        resolved: false,
         likedBy: [],
         favoritedBy: [],
         usefulBy: [],
@@ -430,17 +428,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await setItem(STORAGE_KEYS.USEFUL, marks);
     },
     [state.posts, state.usefulMarks, state.user]
-  );
-
-  const toggleResolved = useCallback(
-    async (postId: string) => {
-      const post = state.posts.find((p) => p.id === postId);
-      if (!post || post.authorId !== state.user.id) return;
-      const updated = { ...post, resolved: !post.resolved };
-      await updatePostAPI(updated);
-      dispatch({ type: 'UPDATE_POST', payload: updated });
-    },
-    [state.posts, state.user]
   );
 
   const getCommentsByPost = useCallback(
@@ -618,7 +605,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     toggleLike,
     toggleFavorite,
     toggleUseful,
-    toggleResolved,
     getCommentsByPost,
     addComment,
     saveDraft,

@@ -13,6 +13,10 @@ const App = (() => {
   let blockedUsers = new Set(state.blockedUsers || []);
   let blockedPosts = new Set(state.blockedPosts || []);
 
+  function stripResolvedFromPosts(posts) {
+    return posts.map(({ resolved, ...rest }) => rest);
+  }
+
   function defaultState() {
     return {
       nickname: '猪猪妈妈',
@@ -43,6 +47,7 @@ const App = (() => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        if (parsed.posts) parsed.posts = stripResolvedFromPosts(parsed.posts);
         return { ...defaultState(), ...parsed, settings: { ...defaultState().settings, ...parsed.settings } };
       }
     } catch (e) { /* ignore */ }
@@ -52,6 +57,7 @@ const App = (() => {
   function saveState() {
     state.blockedUsers = [...blockedUsers];
     state.blockedPosts = [...blockedPosts];
+    state.posts = stripResolvedFromPosts(state.posts);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     applyTheme();
   }
@@ -342,7 +348,6 @@ const App = (() => {
         </div>
         <div class="post-title" onclick="App.showPostDetail('${p.id}')">
           ${escapeHtml(p.title)}
-          ${p.resolved ? '<span class="resolved-badge">已解决</span>' : ''}
         </div>
         <div class="post-content" onclick="App.showPostDetail('${p.id}')">${escapeHtml(p.content)}</div>
         <div class="post-tags">${p.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
@@ -355,7 +360,6 @@ const App = (() => {
           <button class="action-btn" onclick="App.showPostDetail('${p.id}')"><i class="fas fa-comment"></i> ${p.commentCount}</button>
           <button class="action-btn ${favorited ? 'active' : ''}" onclick="App.toggleFavorite('${p.id}')"><i class="fas fa-star"></i> ${p.favoriteCount}</button>
           ${p.type === 'help' ? `<button class="action-btn ${useful ? 'active' : ''}" onclick="App.toggleUseful('${p.id}')"><i class="fas fa-thumbs-up"></i> 有用 ${p.usefulCount || 0}</button>` : ''}
-          ${p.type === 'help' && !p.resolved ? `<button class="action-btn" onclick="App.markResolved('${p.id}')"><i class="fas fa-check"></i> 已解决</button>` : ''}
         </div>
       </div>`;
     }).join('');
@@ -390,11 +394,6 @@ const App = (() => {
     else { post.usefulBy.push(USER_ID); post.usefulCount++; toast('已标记为有用'); }
     saveState();
     renderPosts();
-  }
-
-  function markResolved(postId) {
-    const post = state.posts.find(p => p.id === postId);
-    if (post) { post.resolved = true; toast('已标记为已解决'); saveState(); renderPosts(); }
   }
 
   function showPostMenu(postId) {
@@ -445,7 +444,6 @@ const App = (() => {
     showModal(post.title, `
       <div style="margin-bottom:12px;">
         <span class="post-type ${post.type}">${POST_TYPE_LABELS[post.type]}</span>
-        ${post.resolved ? '<span class="resolved-badge">已解决</span>' : ''}
       </div>
       <p style="line-height:1.7;margin-bottom:12px;">${escapeHtml(post.content)}</p>
       <div class="post-tags" style="margin-bottom:12px;">${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
@@ -536,7 +534,7 @@ const App = (() => {
       images: [], tags, authorId: USER_ID, authorName: state.nickname,
       createdAt: new Date().toISOString(),
       likeCount: 0, commentCount: 0, favoriteCount: 0, usefulCount: 0,
-      resolved: false, usefulBy: []
+      usefulBy: []
     };
     state.posts.unshift(newPost);
     state.myPosts.unshift(newPost.id);
@@ -880,7 +878,7 @@ const App = (() => {
   return {
     openSection, goBackSection, setSectionTab, onItemClick, handleSearchResult,
     setTagFilter, showPostDetail, toggleLike, toggleFavorite, toggleUseful,
-    markResolved, showPostMenu, reportPost, submitReport, blockUser, submitComment,
+    showPostMenu, reportPost, submitReport, blockUser, submitComment,
     showPublishForm, previewImages, submitPost, saveDraft,
     openProfileSub, backProfile, editNickname, editDraft, toggleFollow,
     readNotification, toggleSetting, setFontSize, setPrivacy,
