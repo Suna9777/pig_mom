@@ -145,15 +145,34 @@
     .menu-list { padding: 12px 16px; }
     .menu-group { background: var(--card); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; border: 1px solid var(--border); }
     .menu-item {
-      display: flex; align-items: center; padding: 14px 16px; cursor: pointer;
-      border-bottom: 1px solid var(--border); gap: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      min-height: 48px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
     }
     .menu-item:last-child { border-bottom: none; }
     .menu-item:active { background: var(--primary-light); }
-    .menu-item i { width: 20px; color: var(--primary); text-align: center; }
-    .menu-item span { flex: 1; }
-    .menu-item .arrow { color: var(--text-secondary); font-size: 0.8rem; }
-    .menu-badge { background: var(--primary); color: #fff; font-size: 0.7rem; padding: 1px 6px; border-radius: 10px; }
+    .menu-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .menu-item-left > i { width: 20px; flex-shrink: 0; color: var(--primary); text-align: center; }
+    .menu-item-label { flex: 1; min-width: 0; }
+    .menu-item-arrow {
+      flex-shrink: 0;
+      margin-left: 12px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+    }
+    .menu-badge { background: var(--primary); color: #fff; font-size: 0.7rem; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; }
     /* Bottom Nav */
     .bottom-nav {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -709,6 +728,22 @@ const App = (() => {
     return d.innerHTML;
   }
 
+  /** 「我的」列表项：左侧内容 + 右侧箭头 */
+  function menuItemHtml(onclick, iconClass, label, opts = {}) {
+    const badge = opts.badge ? `<span class="menu-badge">${opts.badge}</span>` : '';
+    const arrow = opts.showArrow === false ? '' : '<span class="menu-item-arrow"><i class="fas fa-chevron-right"></i></span>';
+    const itemStyle = opts.itemStyle ? ` style="${opts.itemStyle}"` : '';
+    const iconStyle = opts.iconStyle ? ` style="${opts.iconStyle}"` : '';
+    return `<div class="menu-item"${itemStyle} onclick="${onclick}">
+      <div class="menu-item-left">
+        <i class="${iconClass}"${iconStyle}></i>
+        <span class="menu-item-label">${label}</span>
+        ${badge}
+      </div>
+      ${arrow}
+    </div>`;
+  }
+
   /* ---- 模态框 ---- */
   function showModal(title, bodyHtml, onClose) {
     const container = document.getElementById('modalContainer');
@@ -1227,15 +1262,15 @@ const App = (() => {
     const unread = state.notifications.filter(n => !n.read).length;
     document.getElementById('profileMenu').innerHTML = `
       <div class="menu-group">
-        <div class="menu-item" onclick="App.openProfileSub('myQuestions')"><i class="fas fa-question-circle"></i><span>我的提问</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-        <div class="menu-item" onclick="App.openProfileSub('favorites')"><i class="fas fa-star"></i><span>我的收藏</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-        <div class="menu-item" onclick="App.openProfileSub('history')"><i class="fas fa-clock"></i><span>浏览历史</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-        <div class="menu-item" onclick="App.openProfileSub('likesComments')"><i class="fas fa-heart"></i><span>点赞/评论记录</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-        <div class="menu-item" onclick="App.openProfileSub('follow')"><i class="fas fa-user-plus"></i><span>关注管理</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-        <div class="menu-item" onclick="App.openProfileSub('notifications')"><i class="fas fa-bell"></i><span>系统通知</span>${unread ? `<span class="menu-badge">${unread}</span>` : ''}<span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+        ${menuItemHtml("App.openProfileSub('myQuestions')", 'fas fa-question-circle', '我的提问')}
+        ${menuItemHtml("App.openProfileSub('favorites')", 'fas fa-star', '我的收藏')}
+        ${menuItemHtml("App.openProfileSub('history')", 'fas fa-clock', '浏览历史')}
+        ${menuItemHtml("App.openProfileSub('likesComments')", 'fas fa-heart', '点赞/评论记录')}
+        ${menuItemHtml("App.openProfileSub('follow')", 'fas fa-user-plus', '关注管理')}
+        ${menuItemHtml("App.openProfileSub('notifications')", 'fas fa-bell', '系统通知', { badge: unread || null })}
       </div>
       <div class="menu-group">
-        <div class="menu-item" onclick="App.openProfileSub('settings')"><i class="fas fa-cog"></i><span>设置管理</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+        ${menuItemHtml("App.openProfileSub('settings')", 'fas fa-cog', '设置管理')}
       </div>`;
   }
 
@@ -1289,9 +1324,9 @@ const App = (() => {
       case 'myQuestions':
         el.innerHTML = `
           <div class="menu-group" style="margin:12px 16px;">
-            <div class="menu-item" onclick="App.openProfileSub('posts')"><i class="fas fa-edit"></i><span>发帖记录</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.openProfileSub('collectedQuestions')"><i class="fas fa-bookmark"></i><span>收藏问题</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.openProfileSub('drafts')"><i class="fas fa-file-alt"></i><span>草稿箱 (${state.drafts.length})</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            ${menuItemHtml("App.openProfileSub('posts')", 'fas fa-edit', '发帖记录')}
+            ${menuItemHtml("App.openProfileSub('collectedQuestions')", 'fas fa-bookmark', '收藏问题')}
+            ${menuItemHtml("App.openProfileSub('drafts')", 'fas fa-file-alt', `草稿箱 (${state.drafts.length})`)}
           </div>
           <div style="padding:0 16px;color:var(--text-secondary);font-size:0.85rem;">历史答疑：你发布或参与的求助帖会显示在发帖记录中。</div>`;
         break;
@@ -1363,20 +1398,20 @@ const App = (() => {
       case 'settings':
         el.innerHTML = `
           <div class="menu-group" style="margin:12px 16px;">
-            <div class="menu-item" onclick="App.openProfileSub('accountSecurity')"><i class="fas fa-lock"></i><span>账号安全</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.openProfileSub('generalSettings')"><i class="fas fa-sliders-h"></i><span>通用设置</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.openProfileSub('privacySettings')"><i class="fas fa-user-shield"></i><span>隐私设置</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.openProfileSub('helpFeedback')"><i class="fas fa-life-ring"></i><span>帮助与反馈</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.openProfileSub('about')"><i class="fas fa-info-circle"></i><span>关于我们</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            ${menuItemHtml("App.openProfileSub('accountSecurity')", 'fas fa-lock', '账号安全')}
+            ${menuItemHtml("App.openProfileSub('generalSettings')", 'fas fa-sliders-h', '通用设置')}
+            ${menuItemHtml("App.openProfileSub('privacySettings')", 'fas fa-user-shield', '隐私设置')}
+            ${menuItemHtml("App.openProfileSub('helpFeedback')", 'fas fa-life-ring', '帮助与反馈')}
+            ${menuItemHtml("App.openProfileSub('about')", 'fas fa-info-circle', '关于我们')}
           </div>`;
         break;
       case 'accountSecurity':
         profileSubPage = 'accountSecurity';
         el.innerHTML = `
           <div class="menu-group" style="margin:12px 16px;">
-            <div class="menu-item" onclick="App.changePassword()"><i class="fas fa-key"></i><span>修改密码</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.bindPhone()"><i class="fas fa-mobile-alt"></i><span>绑定手机</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.logout()" style="color:#DC2626;"><i class="fas fa-sign-out-alt" style="color:#DC2626;"></i><span>退出登录</span></div>
+            ${menuItemHtml('App.changePassword()', 'fas fa-key', '修改密码')}
+            ${menuItemHtml('App.bindPhone()', 'fas fa-mobile-alt', '绑定手机')}
+            ${menuItemHtml('App.logout()', 'fas fa-sign-out-alt', '退出登录', { showArrow: false, itemStyle: 'color:#DC2626', iconStyle: 'color:#DC2626' })}
           </div>`;
         break;
       case 'generalSettings':
@@ -1415,8 +1450,8 @@ const App = (() => {
         profileSubPage = 'helpFeedback';
         el.innerHTML = `
           <div class="menu-group" style="margin:12px 16px;">
-            <div class="menu-item" onclick="App.contactSupport()"><i class="fas fa-headset"></i><span>客服咨询</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.reportIssue()"><i class="fas fa-bug"></i><span>问题上报</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            ${menuItemHtml('App.contactSupport()', 'fas fa-headset', '客服咨询')}
+            ${menuItemHtml('App.reportIssue()', 'fas fa-bug', '问题上报')}
           </div>
           <h3 style="padding:12px 16px 4px;">常见 FAQ</h3>
           ${FAQ.map(f => `<div class="faq-item"><div class="faq-q">${f.q}</div><div class="faq-a">${f.a}</div></div>`).join('')}`;
@@ -1431,8 +1466,8 @@ const App = (() => {
             <p style="color:var(--text-secondary);margin-top:8px;font-size:0.85rem;">华中师范大学生活指南</p>
           </div>
           <div class="menu-group" style="margin:12px 16px;">
-            <div class="menu-item" onclick="App.showAgreement()"><i class="fas fa-file-contract"></i><span>用户协议</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
-            <div class="menu-item" onclick="App.showPrivacy()"><i class="fas fa-shield-alt"></i><span>隐私政策</span><span class="arrow"><i class="fas fa-chevron-right"></i></span></div>
+            ${menuItemHtml('App.showAgreement()', 'fas fa-file-contract', '用户协议')}
+            ${menuItemHtml('App.showPrivacy()', 'fas fa-shield-alt', '隐私政策')}
           </div>`;
         break;
     }

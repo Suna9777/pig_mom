@@ -22,13 +22,17 @@ export function SettingItem({ icon, title, subtitle, onPress, rightElement, show
       disabled={!onPress && !rightElement}
       activeOpacity={onPress ? 0.7 : 1}
     >
-      <Ionicons name={icon} size={22} color={colors.primary} style={styles.icon} />
-      <View style={styles.textWrap}>
-        <Text style={{ color: colors.text, fontSize: fonts.md }}>{title}</Text>
-        {subtitle && <Text style={{ color: colors.textSecondary, fontSize: fonts.sm, marginTop: 2 }}>{subtitle}</Text>}
+      <View style={styles.left}>
+        <Ionicons name={icon} size={22} color={colors.primary} style={styles.icon} />
+        <View style={styles.textWrap}>
+          <Text style={{ color: colors.text, fontSize: fonts.md }}>{title}</Text>
+          {subtitle && <Text style={{ color: colors.textSecondary, fontSize: fonts.sm, marginTop: 2 }}>{subtitle}</Text>}
+        </View>
+        {rightElement}
       </View>
-      {rightElement}
-      {showArrow && onPress && <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />}
+      {showArrow && onPress && (
+        <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} style={styles.arrow} />
+      )}
     </TouchableOpacity>
   );
 }
@@ -36,10 +40,21 @@ export function SettingItem({ icon, title, subtitle, onPress, rightElement, show
 const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    minHeight: 48,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+  left: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: 0,
+    marginRight: 12,
+  },
   icon: { marginRight: 12 },
-  textWrap: { flex: 1 },
+  textWrap: { flex: 1, minWidth: 0 },
+  arrow: { flexShrink: 0 },
 });
